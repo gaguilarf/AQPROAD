@@ -8,4 +8,8 @@
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
     <string name="don_t_have_an_account_yet_register">Nuevo en AQP ROAD? Registrate</string>
     <string name="recordarme_en_este_dispositivo">Recordarme en este dispositivo</string>
+    <string name="back_arrow">back arrow</string>
+    <string name="molinos_de_sabandia">Molinos de Sabandia</string>
+    <string name="vamos_all">Vamos allá!</string>
+    <string name="back_button">Back button</string>
 </resources>

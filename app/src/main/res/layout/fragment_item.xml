@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".fragments.ItemFragment">
+    tools:context=".Item.ItemFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -169,7 +169,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="420dp" />
 
-    <com.techteam.lab06.LaCompaniaView
+    <com.techteam.aqproad.Item.LaCompaniaView
         android:id="@+id/laCompaniaView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
