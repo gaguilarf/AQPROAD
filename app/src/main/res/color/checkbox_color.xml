@@ -1,0 +1,5 @@
+<!-- res/color/checkbox_color.xml -->
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_checked="true" android:color="#FF7F50"/> <!-- Color cuando está seleccionado -->
+    <item android:color="#FF7F50"/> <!-- Color cuando no está seleccionado -->
+</selector>

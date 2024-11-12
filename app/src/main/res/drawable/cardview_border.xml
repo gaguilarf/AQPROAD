@@ -1,0 +1,20 @@
+<!-- res/drawable/cardview_border.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Imagen como fondo del CardView -->
+    <item>
+        <bitmap
+            android:src="@drawable/logo"
+        android:gravity="center" />
+    </item>
+
+    <!-- Borde -->
+    <item android:top="2dp" android:left="2dp" android:right="2dp" android:bottom="2dp">
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/transparent"/> <!-- Color del fondo del borde -->
+            <stroke
+                android:width="5dp"
+                android:color="@android:color/black"/> <!-- Color y grosor del borde -->
+            <corners android:radius="10dp"/> <!-- Radio de las esquinas -->
+        </shape>
+    </item>
+</layer-list>

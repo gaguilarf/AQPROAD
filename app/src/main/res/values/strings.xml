@@ -1,10 +1,11 @@
 <resources>
     <string name="app_name">AQP ROAD</string>
-    <string name="enter_your_username">Enter your username</string>
-    <string name="username">Username</string>
-    <string name="password">Password</string>
-    <string name="enter_your_password">Enter your password</string>
-    <string name="login">Login</string>
-    <string name="forgot_password" >forgot password?</string>
-    <string name="don_t_have_an_account_yet_register">Don\'t have an account yet? Register</string>
+    <string name="enter_your_username">Ingrese su usuario</string>
+    <string name="username">Usuario</string>
+    <string name="password">Contraseña</string>
+    <string name="enter_your_password">Ingrese su contraseña</string>
+    <string name="login">Iniciar sesión</string>
+    <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="don_t_have_an_account_yet_register">Nuevo en AQP ROAD? Registrate</string>
+    <string name="recordarme_en_este_dispositivo">Recordarme en este dispositivo</string>
 </resources>

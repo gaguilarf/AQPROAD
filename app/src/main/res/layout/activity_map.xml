@@ -5,14 +5,6 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
-
-    <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/main_container"
-        android:name="com.techteam.aqproad.Item.ItemFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="82dp"
-        tools:layout_editor_absoluteY="225dp" />
+    tools:context=".Map.MapActivity">
 
 </androidx.constraintlayout.widget.ConstraintLayout>

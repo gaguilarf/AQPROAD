@@ -1,0 +1,352 @@
+{
+  "retabloPrincipal": [
+    {
+      "centerX": 224.0,
+      "centerY": 245.0,
+      "text": "1"
+    },
+    {
+      "centerX": 352.5,
+      "centerY": 175.0,
+      "text": "2"
+    },
+    {
+      "centerX": 352.5,
+      "centerY": 315.0,
+      "text": "3"
+    }
+  ],
+  "coro": [
+    {
+      "centerX": 876.0,
+      "centerY": 315.0,
+      "text": "24"
+    },
+    {
+      "centerX": 916.0,
+      "centerY": 315.0,
+      "text": "25"
+    },
+    {
+      "centerX": 950.0,
+      "centerY": 272.0,
+      "text": "26"
+    },
+    {
+      "centerX": 950.0,
+      "centerY": 245.0,
+      "text": "27"
+    },
+    {
+      "centerX": 950.0,
+      "centerY": 218.0,
+      "text": "28"
+    },
+    {
+      "centerX": 916.0,
+      "centerY": 175.0,
+      "text": "29"
+    },
+    {
+      "centerX": 876.0,
+      "centerY": 175.0,
+      "text": "30"
+    }
+  ],
+  "retabloFundadores": [
+    {
+      "centerX": 410.0,
+      "centerY": 400.0,
+      "text": "4"
+    },
+    {
+      "centerX": 432.0,
+      "centerY": 442.0,
+      "text": "5"
+    },
+    {
+      "centerX": 501.0,
+      "centerY": 442.0,
+      "text": "6"
+    },
+    {
+      "centerX": 523.0,
+      "centerY": 400.0,
+      "text": "7"
+    }
+  ],
+  "retabloCrucificado": [
+    {
+      "centerX": 523.0,
+      "centerY": 92.0,
+      "text": "45"
+    },
+    {
+      "centerX": 501.0,
+      "centerY": 50.0,
+      "text": "46"
+    },
+    {
+      "centerX": 432.0,
+      "centerY": 50.0,
+      "text": "47"
+    },
+    {
+      "centerX": 410.0,
+      "centerY": 92.0,
+      "text": "48"
+    }
+  ],
+
+  "espacio1": [
+    {
+      "centerX": 610.0,
+      "centerY": 50.0,
+      "text": "39"
+    },
+    {
+      "centerX": 574.0,
+      "centerY": 50.0,
+      "text": "40"
+    },
+    {
+      "centerX": 592.0,
+      "centerY": 50.0,
+      "text": "41"
+    },
+    {
+      "centerX": 556.0,
+      "centerY": 92.0,
+      "text": "42"
+    },
+    {
+      "centerX": 610.0,
+      "centerY": 167.0,
+      "text": "43"
+    },
+    {
+      "centerX": 574.0,
+      "centerY": 167.0,
+      "text": "44"
+    }
+  ],
+  "espacio2": [
+    {
+      "centerX": 740.0,
+      "centerY": 92.0,
+      "text": "35"
+    },
+    {
+      "centerX": 718.0,
+      "centerY": 167.0,
+      "text": "36"
+    },
+    {
+      "centerX": 682.0,
+      "centerY": 167.0,
+      "text": "37"
+    }
+  ],
+  "espacio3": [
+    {
+      "centerX": 824.0,
+      "centerY": 167.0,
+      "text": "31"
+    },
+    {
+      "centerX": 792.0,
+      "centerY": 167.0,
+      "text": "32"
+    },
+    {
+      "centerX": 846.0,
+      "centerY": 92.0,
+      "text": "33"
+    },
+    {
+      "centerX": 770.0,
+      "centerY": 92.0,
+      "text": "34"
+    }
+  ],
+  "capillaSanIgnacio": [
+    {
+      "centerX": 85.5,
+      "centerY": 415.0,
+      "text": "62"
+    },
+    {
+      "centerX": 163.0,
+      "centerY": 490.0,
+      "text": "63"
+    },
+    {
+      "centerX": 230.0,
+      "centerY": 415.0,
+      "text": "64"
+    },
+    {
+      "centerX": 163.0,
+      "centerY": 341.0,
+      "text": "65"
+    },
+    {
+      "centerX": 200.0,
+      "centerY": 341.0,
+      "text": "66"
+    }
+  ],
+  "anteSacristiaAntigua": [
+    {
+      "centerX": 380.0,
+      "centerY": 341.0,
+      "text": "49"
+    },
+    {
+      "centerX": 325.0,
+      "centerY": 341.0,
+      "text": "50"
+    },
+    {
+      "centerX": 260.0,
+      "centerY": 341.0,
+      "text": "51"
+    },
+    {
+      "centerX": 260.0,
+      "centerY": 378.0,
+      "text": "52"
+    },
+    {
+      "centerX": 260.0,
+      "centerY": 415.0,
+      "text": "53"
+    },
+    {
+      "centerX": 260.0,
+      "centerY": 452.0,
+      "text": "54"
+    },
+    {
+      "centerX": 260.0,
+      "centerY": 489.0,
+      "text": "55"
+    },
+    {
+      "centerX": 303.0,
+      "centerY": 489.0,
+      "text": "56"
+    },
+    {
+      "centerX": 325.0,
+      "centerY": 489.0,
+      "text": "57"
+    },
+    {
+      "centerX": 352.5,
+      "centerY": 489,
+      "text": "58"
+    },
+    {
+      "centerX": 380.0,
+      "centerY": 489.0,
+      "text": "59"
+    },
+    {
+      "centerX": 380.0,
+      "centerY": 463.0,
+      "text": "60"
+    },
+    {
+      "centerX": 380.0,
+      "centerY": 437.0,
+      "text": "61"
+    }
+  ],
+  "espacio5": [
+    {
+      "centerX": 552.0,
+      "centerY": 400.0,
+      "text": "08"
+    },
+    {
+      "centerX": 574.0,
+      "centerY": 442.0,
+      "text": "09"
+    },
+    {
+      "centerX": 610.0,
+      "centerY": 442.0,
+      "text": "10"
+    },
+    {
+      "centerX": 592.0,
+      "centerY": 442.0,
+      "text": "11"
+    },
+    {
+      "centerX": 632.0,
+      "centerY": 400.0,
+      "text": "12"
+    },
+    {
+      "centerX": 574.0,
+      "centerY": 324.0,
+      "text": "13"
+    },
+    {
+      "centerX": 610.0,
+      "centerY": 324.0,
+      "text": "14"
+    }
+  ],
+  "espacio6": [
+    {
+      "centerX": 660.0,
+      "centerY": 400.0,
+      "text": "15"
+    },
+    {
+      "centerX": 740.0,
+      "centerY": 400.0,
+      "text": "16"
+    },
+    {
+      "centerX": 682.0,
+      "centerY": 324.0,
+      "text": "17"
+    },
+    {
+      "centerX": 718.0,
+      "centerY": 324.0,
+      "text": "18"
+    }
+  ],
+  "espacio7": [
+    {
+      "centerX": 770.0,
+      "centerY": 400.0,
+      "text": "07"
+    },
+    {
+      "centerX": 846.0,
+      "centerY": 389.0,
+      "text": "20"
+    },
+    {
+      "centerX": 846.0,
+      "centerY": 411.0,
+      "text": "21"
+    },
+    {
+      "centerX": 792.0,
+      "centerY": 324.0,
+      "text": "22"
+    },
+    {
+      "centerX": 824.0,
+      "centerY": 324.0,
+      "text": "23"
+    }
+  ]
+}

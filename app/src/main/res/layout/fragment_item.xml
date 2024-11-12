@@ -1,0 +1,178 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".fragments.ItemFragment">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <!-- Imagen principal -->
+        <ImageView
+            android:id="@+id/img_main"
+            android:layout_width="match_parent"
+            android:layout_height="300dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/back_item"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Flecha para volver -->
+        <ImageButton
+            android:id="@+id/btn_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:background="@drawable/selector"
+            android:contentDescription="@string/back_button"
+            android:src="@drawable/arrow_back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Título del lugar -->
+        <TextView
+            android:id="@+id/txt_titulo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Iglesia de la compañia"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="315dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- Texto "Mostrar mapa" -->
+
+        <TextView
+            android:id="@+id/text_show_map"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:text="Mostrar mapa"
+            android:textColor="#FF7F50"
+            android:textSize="14sp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="322dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/txtCroquis"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Croquis"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:layout_marginTop="445dp"
+            android:layout_marginStart="16dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_expand"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_marginTop="443dp"
+            android:layout_marginEnd="16dp"
+            android:background="@drawable/icon_expand"
+            android:contentDescription="@string/back_button"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginTop="16dp"
+            android:elevation="15dp"
+            app:cardCornerRadius="10dp"
+            app:layout_constraintTop_toBottomOf="@+id/txtCroquis"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent">
+
+            <ImageView
+                android:id="@+id/img_plano"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:layout_gravity="bottom|center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/selector_map" />
+
+        </androidx.cardview.widget.CardView>
+
+        <Button
+            android:id="@+id/btn_vamos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:layout_marginTop="16dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="#FF7F50"
+            android:text="@string/vamos_all"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- RatingBar para las estrellas -->
+    <ImageView
+        android:id="@+id/rating_bar"
+        android:layout_width="23dp"
+        android:layout_height="23dp"
+        android:layout_marginTop="354dp"
+        android:layout_marginStart="16dp"
+        android:src="@drawable/icon_star"
+        app:tint="#FF7F50" />
+
+    <!-- Texto de las reseñas -->
+    <TextView
+        android:id="@+id/text_reviews"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="4.5 (15 Reseñas)"
+        android:textSize="14sp"
+        android:layout_marginStart="42dp"
+        android:layout_marginTop="356dp" />
+
+    <!-- Descripción del lugar -->
+    <TextView
+        android:id="@+id/text_description"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="380dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="Se encuentra ubicada entre el Portal de la Municipalidad y el Portal de Flores. Templo erigido por...."
+        android:textSize="14sp"
+        android:maxLines="3" />
+
+    <!-- Botón "Leer más" -->
+    <TextView
+        android:id="@+id/text_read_more"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Leer más"
+        android:textSize="14sp"
+        android:textColor="#FF7F50"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="420dp" />
+
+    <com.techteam.lab06.LaCompaniaView
+        android:id="@+id/laCompaniaView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone" /> <!-- Inicialmente oculto -->
+
+</FrameLayout>
