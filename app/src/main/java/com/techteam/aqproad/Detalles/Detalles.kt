@@ -1,7 +1,9 @@
 package com.techteam.aqproad.Detalles
 
+import android.Manifest
 import android.content.Context
 import android.content.pm.ActivityInfo
+import android.content.pm.PackageManager
 import android.database.ContentObserver
 import android.media.AudioManager
 import android.os.Bundle
@@ -11,9 +13,15 @@ import android.provider.Settings
 import android.widget.ImageButton
 import android.widget.RatingBar
 import android.widget.SeekBar
+import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
 import com.techteam.aqproad.R
+import android.location.Location
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 
 class DetallesActivity : AppCompatActivity()  {
 
@@ -24,6 +32,11 @@ class DetallesActivity : AppCompatActivity()  {
     private lateinit var volumeSeekBar: SeekBar
     private lateinit var audioManager: AudioManager
     private lateinit var volumeObserver: ContentObserver
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    companion object {
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,6 +50,7 @@ class DetallesActivity : AppCompatActivity()  {
         volumeSeekBar = findViewById(R.id.seekBarVolume)
 
         audioManager = getSystemService(Context.AUDIO_SERVICE) as AudioManager
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
 
         // Configurar el rango del SeekBar basado en el volumen máximo del sistema
         val maxVolume = audioManager.getStreamMaxVolume(AudioManager.STREAM_MUSIC)
@@ -69,16 +83,27 @@ class DetallesActivity : AppCompatActivity()  {
             }
         }
 
-
+        // Control de pantalla completa
         fullScreenBtn.setOnClickListener {
-            //requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
             toggleFullScreen()
-            //isFullScreen = !isFullScreen
         }
 
         // Calificación
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
             // Manejar el valor de la calificación
+            if (!isUserLoggedIn()) {
+                showToast("Debe iniciar sesión para calificar.")
+                ratingBar.rating = 0f
+                return@setOnRatingBarChangeListener
+            }
+
+            if (!isUserAtLocation()) {
+                showToast("Debe estar en la ubicación de la edificación para calificar.")
+                ratingBar.rating = 0f
+                return@setOnRatingBarChangeListener
+            }
+
+            saveUserRating(rating)
         }
 
         // Registrar el ContentObserver para observar los cambios de volumen
@@ -104,7 +129,6 @@ class DetallesActivity : AppCompatActivity()  {
             //videoControls.visibility = View.GONE
         } else {
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-
         }
     }
 
@@ -113,5 +137,67 @@ class DetallesActivity : AppCompatActivity()  {
         // Actualiza la posición del SeekBar cuando se reanuda la actividad
         val currentVolume = audioManager.getStreamVolume(AudioManager.STREAM_MUSIC)
         volumeSeekBar.progress = currentVolume
+    }
+
+    private fun isUserLoggedIn(): Boolean {
+        // Verificar si hay un usuario logeado, por ejemplo, usando SharedPreferences o tu sistema de autenticación.
+        val sharedPreferences = getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+        return sharedPreferences.getBoolean("is_logged_in", false)
+    }
+
+    private fun isUserAtLocation(): Boolean {
+        // Coordenadas del lugar de la edificación (ejemplo)
+        val targetLatitude = -16.39889
+        val targetLongitude = -71.535
+        var userAtLocation = false
+
+        // Verificar si los permisos de ubicación están otorgados
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                location?.let {
+                    val distance = FloatArray(1)
+                    Location.distanceBetween(targetLatitude, targetLongitude, it.latitude, it.longitude, distance)
+                    userAtLocation = distance[0] < 100 // Distancia máxima en metros
+                }
+            }
+        } else {
+            // Solicitar permisos de ubicación
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+        return userAtLocation
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido, puedes continuar con la lógica de ubicación
+                isUserAtLocation()
+            } else {
+                showToast("Permiso de ubicación denegado. No se puede verificar la ubicación.")
+            }
+        }
+    }
+
+    private fun saveUserRating(rating: Float) {
+        showToast("Gracias por calificar con $rating estrellas.")
+        // Guardar la calificación en la base de datos o realizar otra acción
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        contentResolver.unregisterContentObserver(volumeObserver)
     }
 }
