@@ -10,18 +10,19 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.provider.Settings
+import android.view.View
 import android.widget.ImageButton
 import android.widget.RatingBar
 import android.widget.SeekBar
 import android.widget.Toast
 import android.widget.VideoView
 import androidx.appcompat.app.AppCompatActivity
-import com.techteam.aqproad.R
-import android.location.Location
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.techteam.aqproad.R
+import android.location.Location
 
 class DetallesActivity : AppCompatActivity()  {
 
@@ -33,6 +34,8 @@ class DetallesActivity : AppCompatActivity()  {
     private lateinit var audioManager: AudioManager
     private lateinit var volumeObserver: ContentObserver
     private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private var isInFullScreen = false
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -74,13 +77,7 @@ class DetallesActivity : AppCompatActivity()  {
 
         // Control de reproducción/pausa
         playPauseButton.setOnClickListener {
-            if (videoView.isPlaying) {
-                videoView.pause()
-                playPauseButton.setImageResource(android.R.drawable.ic_media_play)
-            } else {
-                videoView.start()
-                playPauseButton.setImageResource(android.R.drawable.ic_media_pause)
-            }
+            togglePlayPause()
         }
 
         // Control de pantalla completa
@@ -122,13 +119,77 @@ class DetallesActivity : AppCompatActivity()  {
         )
     }
 
-    private fun toggleFullScreen() {
-        val orientacion = resources.configuration.orientation
-        requestedOrientation = if (orientacion == ActivityInfo.SCREEN_ORIENTATION_PORTRAIT) {
-            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-            //videoControls.visibility = View.GONE
+    private fun togglePlayPause() {
+        if (videoView.isPlaying) {
+            videoView.pause()
+            playPauseButton.setImageResource(android.R.drawable.ic_media_play)
         } else {
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+            videoView.start()
+            playPauseButton.setImageResource(android.R.drawable.ic_media_pause)
+        }
+    }
+
+    private fun toggleFullScreen() {
+        if (isInFullScreen) {
+            exitFullScreen()
+        } else {
+            enterFullScreen()
+        }
+        isInFullScreen = !isInFullScreen
+    }
+
+    private fun enterFullScreen() {
+        setContentView(R.layout.fullscreen_layout)  // Cambia al layout de pantalla completa
+
+        val fullscreenVideoView = findViewById<VideoView>(R.id.fullscreenVideoView)
+        val buttonPlayPauseFullscreen = findViewById<ImageButton>(R.id.buttonPlayPauseFullscreen)
+        val buttonExitFullscreen = findViewById<ImageButton>(R.id.buttonExitFullscreen)
+
+        // Configura el video en pantalla completa
+        fullscreenVideoView.setVideoPath("android.resource://" + packageName + "/" + R.raw.v1)
+        fullscreenVideoView.seekTo(videoView.currentPosition)  // Mantiene la posición actual del video
+        fullscreenVideoView.start()
+
+        // Configura los controles
+        buttonPlayPauseFullscreen.setOnClickListener {
+            if (fullscreenVideoView.isPlaying) {
+                fullscreenVideoView.pause()
+                buttonPlayPauseFullscreen.setImageResource(android.R.drawable.ic_media_play)
+            } else {
+                fullscreenVideoView.start()
+                buttonPlayPauseFullscreen.setImageResource(android.R.drawable.ic_media_pause)
+            }
+        }
+
+        buttonExitFullscreen.setOnClickListener {
+            exitFullScreen()
+        }
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    }
+
+    private fun exitFullScreen() {
+        setContentView(R.layout.activity_detalles)  // Vuelve al diseño principal
+
+        // Configura el video y los controles principales en el layout de detalles
+        setupMainLayoutControls()
+        videoView.seekTo(videoView.currentPosition) // Mantiene la posición actual del video
+        videoView.start()  // Reanuda el video en el layout principal
+
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+        isInFullScreen = false
+    }
+
+    private fun setupMainLayoutControls() {
+        videoView = findViewById(R.id.videoView)
+        playPauseButton = findViewById(R.id.buttonPlayPause)
+        fullScreenBtn = findViewById(R.id.buttonFullScreen)
+
+        playPauseButton.setOnClickListener {
+            togglePlayPause()
+        }
+
+        fullScreenBtn.setOnClickListener {
+            toggleFullScreen()
         }
     }
 
