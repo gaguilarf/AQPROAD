@@ -1,24 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="#FFFFFF"
     android:padding="16dp">
 
     <!-- Título -->
+
     <TextView
         android:id="@+id/textTitulo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Dentro del lugar"
+        android:text="Recorrido dentro del lugar"
         android:textSize="20sp"
         android:textStyle="bold"
+        android:textColor="#333333"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
+        android:layout_marginTop="30dp"
         android:layout_marginBottom="8dp" />
 
     <!-- VideoView para el video de la visita guiada -->
+
     <VideoView
         android:id="@+id/videoView"
         android:layout_width="match_parent"
@@ -26,13 +32,13 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="16dp" />
 
-    <!-- Botones de reproducción y controles del video -->
+    <!-- Contenedor de controles de reproducción, volumen y pantalla completa -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_horizontal"
-        android:layout_marginBottom="16dp">
+        android:layout_marginBottom="40dp">
 
         <!-- Botón de reproducción/pausa -->
         <ImageButton
@@ -40,34 +46,44 @@
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:src="@android:drawable/ic_media_play"
-            android:contentDescription="Reproducir/Pausar" />
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Reproducir/Pausar"
+            app:tint="#FF5722" />
 
         <!-- Control de volumen -->
         <SeekBar
             android:id="@+id/seekBarVolume"
             android:layout_width="0dp"
-            android:layout_weight="1"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"
+            android:layout_marginTop="15dp"
+            android:layout_weight="1"
+            android:progressTint="#FF5722"
+            android:thumbTint="#FF5722" />
 
         <!-- Botón de pantalla completa -->
         <ImageButton
             android:id="@+id/buttonFullScreen"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Pantalla Completa"
             android:src="@drawable/full_screen_icon"
-            android:contentDescription="Pantalla Completa" />
+            app:tint="#FF5722" />
     </LinearLayout>
 
-    <!-- Calificación con estrellas -->
+    <!-- Texto para la sección de calificación -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Calificar lugar"
+        android:textSize="16sp"
+        android:textColor="#333333"
         android:layout_gravity="center_horizontal"
         android:layout_marginBottom="8dp" />
 
+    <!-- Calificación con estrellas -->
     <RatingBar
         android:id="@+id/ratingBar"
         android:layout_width="wrap_content"
@@ -75,5 +91,6 @@
         android:numStars="5"
         android:stepSize="1.0"
         android:rating="0"
-        android:layout_gravity="center_horizontal" />
+        android:layout_gravity="center_horizontal"
+        android:progressTint="#FFD700" />
 </LinearLayout>
