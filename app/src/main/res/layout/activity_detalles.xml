@@ -16,7 +16,7 @@
         android:textStyle="bold"
         android:gravity="center"
         android:layout_gravity="center_horizontal"
-        android:marginBottom="8dp" />
+        android:layout_marginBottom="8dp" />
 
     <!-- VideoView para el video de la visita guiada -->
     <VideoView
@@ -56,7 +56,7 @@
             android:id="@+id/buttonFullScreen"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:src="@android:drawable/ic_media_fullscreen"
+            android:src="@drawable/full_screen_icon"
             android:contentDescription="Pantalla Completa" />
     </LinearLayout>
 
