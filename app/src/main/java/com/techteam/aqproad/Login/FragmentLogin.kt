@@ -49,14 +49,6 @@ class FragmentLogin : Fragment() {
             val pass = view.findViewById<EditText>(R.id.inputPasswordLogin)
 
             if (user.text.isNotEmpty() && pass.text.isNotEmpty()) {
-                Toast.makeText(
-                    view.context,
-                    "Llena todos los campos",
-                    Toast.LENGTH_SHORT,
-                ).show()
-            }
-            else {
-
                 val email = user.text.toString()
                 val password = user.text.toString()
 
@@ -75,6 +67,13 @@ class FragmentLogin : Fragment() {
                             ).show()
                         }
                     }
+            }
+            else {
+                Toast.makeText(
+                    view.context,
+                    "Llena todos los campos",
+                    Toast.LENGTH_SHORT,
+                ).show()
             }
         }
     }
