@@ -5,6 +5,13 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
+import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.FirebaseApp
+import com.techteam.aqproad.Home.FavoritesFragment
+import com.techteam.aqproad.Home.HomeFragment
+import com.techteam.aqproad.Home.UserFragment
+import com.techteam.aqproad.Map.MapFragment
 import com.techteam.aqproad.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
@@ -17,5 +24,29 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        FirebaseApp.initializeApp(this)
+
+        val bottomNavigationView = binding.bottomNavView
+        bottomNavigationView.setOnNavigationItemSelectedListener { item ->
+            when (item.itemId) {
+                R.id.home_menu -> loadFragment(HomeFragment())  // Reemplaza con tu fragmento de Home
+                R.id.map_menu -> loadFragment(MapFragment())
+                R.id.favorites_menu -> loadFragment(FavoritesFragment())  // Reemplaza con tu fragmento de favoritos
+                R.id.user_menu -> loadFragment(UserFragment())  // Reemplaza con tu fragmento de usuario
+                else -> false
+            }
+            true
+        }
+
+        // Cargar fragmento inicial
+        if (savedInstanceState == null) {
+            loadFragment(HomeFragment())  // Cargar fragmento inicial (Home)
+        }
+    }
+
+    private fun loadFragment(fragment: Fragment) {
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.main_container, fragment)
+            .commit()
     }
 }

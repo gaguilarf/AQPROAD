@@ -20,11 +20,10 @@ class ItemFragment : Fragment() {
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
 
         btnExpand.setOnClickListener {
-            // Cambia a CroquisFragment
             val fragment = CroquisFragment()
             val transaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
-            transaction.replace(R.id.main_container, fragment) // Usa el ID del FragmentContainerView
-            transaction.addToBackStack(null) // Agrega a la pila de retroceso
+            transaction.replace(R.id.main_container, fragment)
+            transaction.addToBackStack(null)
             transaction.commit()
         }
 

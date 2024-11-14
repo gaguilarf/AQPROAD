@@ -7,12 +7,20 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <!-- Barra de navegación inferior -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_nav_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:menu="@menu/menu_navigation"
+        app:labelVisibilityMode="unlabeled" />
+
+    <!-- FragmentContainerView ya no está dentro de un ScrollView -->
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/main_container"
-        android:name="com.techteam.aqproad.Item.ItemFragment"
+        android:name="com.techteam.aqproad.Home.HomeFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="82dp"
-        tools:layout_editor_absoluteY="225dp" />
+        android:layout_height="match_parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
