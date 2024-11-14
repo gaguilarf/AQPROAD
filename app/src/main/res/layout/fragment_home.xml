@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:context=".Home.HomeFragment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="14dp">
+
+        <!-- Primer LinearLayout para saludo e imagen -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <!-- Contenedor para los TextViews -->
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:orientation="vertical">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Hola, Rodrigo!"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Explora Arequipa!"/>
+            </LinearLayout>
+
+            <!-- Imagen de usuario o icono -->
+            <ImageView
+                android:id="@+id/imageView"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_launcher_foreground" />
+
+        </LinearLayout>
+
+        <!-- Barra de búsqueda -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="70dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <EditText
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="3"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:hint="Buscar Lugares"/>
+
+            <ImageButton
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:src="@drawable/ic_launcher_foreground"
+                android:layout_weight="1"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp" />
+
+        </LinearLayout>
+
+        <!-- Sección de títulos: Lugares Populares y Ver Todos -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:paddingTop="20dp"
+            android:paddingBottom="20dp"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Lugares Populares"
+                android:gravity="center_vertical"/>
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:text="Ver Todos"
+                android:gravity="center_vertical"/>
+
+        </LinearLayout>
+
+        <!-- Grupo de botones toggle -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="60dp"
+            android:orientation="horizontal"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp">
+
+            <com.google.android.material.button.MaterialButtonToggleGroup
+                android:id="@+id/button_toggle_group"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:divider="@drawable/divider"
+                android:showDividers="middle"
+                android:orientation="horizontal"
+                app:singleSelection="true">
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_mas_visitados"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Mas visitados"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/orange"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_cercanos"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Cercanos"
+                    android:textColor="@color/white"
+                    app:cornerRadius="14dp"
+                    android:textSize="10sp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    app:backgroundTint="@color/orange"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/button_recientes"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    app:cornerRadius="14dp"
+                    android:text="Recientes"
+                    android:textColor="@color/white"
+                    android:textSize="10sp"
+                    android:layout_marginStart="5dp"
+                    android:layout_marginEnd="5dp"
+                    app:backgroundTint="@color/orange"/>
+
+            </com.google.android.material.button.MaterialButtonToggleGroup>
+
+        </LinearLayout>
+
+        <!-- RecyclerView para mostrar lugares -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/list_places"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"/>
+
+    </LinearLayout>
+
+</FrameLayout>
