@@ -1,5 +1,6 @@
 package com.techteam.aqproad.Login
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -11,6 +12,7 @@ import android.widget.EditText
 import android.widget.TextView
 import android.widget.Toast
 import com.google.firebase.auth.FirebaseAuth
+import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
 
 class FragmentLogin : Fragment() {
@@ -58,6 +60,9 @@ class FragmentLogin : Fragment() {
                             Log.d("LOGIN", "SIGNIN Exitoso")
                             val user = auth.currentUser
                             Log.d("LOGIN", user.toString())
+                            val intent = Intent(requireContext(), MainActivity::class.java)
+                            startActivity(intent)
+                            requireActivity().finish()
                         } else {
                             Log.w("LOGIN", "SIGNING FALLO", task.exception)
                             Toast.makeText(

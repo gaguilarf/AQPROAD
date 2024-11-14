@@ -1,5 +1,6 @@
 package com.techteam.aqproad.Home
 
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,7 +8,9 @@ import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.techteam.aqproad.Item.LaCompaniaView
 import com.techteam.aqproad.R
+import com.techteam.aqproad.SitioActivity
 
 class EdificacionAdapter(
     private val edificaciones: MutableList<Edificacion>,
@@ -26,6 +29,15 @@ class EdificacionAdapter(
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
                     onLikeClick(position) // Llamamos al callback para actualizar el estado
+                }
+            }
+
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    // Abrir LaCompaniaView cuando se hace clic en el ítem
+                    val intent = Intent(itemView.context, SitioActivity::class.java)
+                    itemView.context.startActivity(intent)
                 }
             }
         }

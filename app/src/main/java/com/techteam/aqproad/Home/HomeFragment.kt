@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.techteam.aqproad.Item.ItemFragment
+import com.techteam.aqproad.Login.FragmentLogin
 import com.techteam.aqproad.R
 
 class HomeFragment : Fragment() {
@@ -29,10 +31,14 @@ class HomeFragment : Fragment() {
         val adapter = EdificacionAdapter(edificaciones) { position ->
             val edificacion = edificaciones[position]
             edificacion.liked = !edificacion.liked
+
         }
 
         // Asignar el adaptador al RecyclerView
+
         recyclerView.adapter = adapter
+
+
 
         return rootView
     }

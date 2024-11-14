@@ -161,7 +161,9 @@
             android:id="@+id/list_places"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal"/>
+            android:orientation="horizontal"
+            android:clickable="true"
+            android:focusable="true" />
 
     </LinearLayout>
 
