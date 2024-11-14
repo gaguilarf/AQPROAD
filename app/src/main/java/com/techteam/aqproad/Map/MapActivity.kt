@@ -15,6 +15,8 @@ import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import android.location.LocationManager
 import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
 import org.osmdroid.util.BoundingBox
@@ -57,33 +59,42 @@ class MapActivity : AppCompatActivity() {
 
         if (location != null) {
             val userLocation = GeoPoint(location.latitude, location.longitude)
-            mapView.controller.setZoom(20.0) // Nivel de zoom cuando se encuentra la ubicación actual
+            mapView.controller.setZoom(19.0) // Nivel de zoom cuando se encuentra la ubicación actual
             mapView.controller.setCenter(userLocation)
         } else {
             // Opción: mantener el centro por defecto si no hay datos de ubicación
-            val defaultLocation = GeoPoint(-16.4090, -71.5375) // Coordenadas de Arequipa
+            val defaultLocation = GeoPoint(-16.3988625, -71.5368597) // Coordenadas de Arequipa
             mapView.controller.setCenter(defaultLocation)
-            mapView.controller.setZoom(20.0)
+            mapView.controller.setZoom(19.0)
         }
     }
-
 
     private fun loadTouristSites() {
         db.collection("Sitios_turisticos")
             .orderBy("sitID") // Ordenar por sitID
             .get()
             .addOnSuccessListener { documents ->
+                // Creamos una lista para almacenar los nombres de los sitios turísticos
+                val sitios = mutableListOf<String>()
+
+                // Iteramos sobre los documentos y agregamos el nombre del sitio a la lista
                 for (document in documents) {
                     val sitCooX = document.getDouble("sitCooX") ?: 0.0
                     val sitCooY = document.getDouble("sitCooY") ?: 0.0
-                    addMarker(GeoPoint(sitCooX, sitCooY), document.getString("nombre") ?: "Sitio")
+                    val nombre = document.getString("sitNom") ?: "Sitio"
+                    sitios.add(nombre)
+
+                    addMarker(GeoPoint(sitCooX, sitCooY+0.0026), nombre)
+                    Log.d("coor", "Coordenadas: lat: $sitCooX, lon: $sitCooY")
+
                 }
             }
             .addOnFailureListener { exception ->
-                // Manejar errores
+                // Mostrar un Toast con el error si la carga falla
                 exception.printStackTrace()
             }
     }
+
 
     private fun addMarker(geoPoint: GeoPoint, title: String) {
         val marker = Marker(mapView)
