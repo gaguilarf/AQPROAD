@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Login.fragment_register">
+    tools:context=".Login.FragmentRegister">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -87,6 +87,8 @@
             android:text="Inicia sesión"
             android:textColor="#FF7F50"
             android:textSize="15dp"
+            android:clickable="true"
+            android:focusable="true"
             app:layout_constraintStart_toEndOf="@+id/txtQuestion"
             app:layout_constraintTop_toBottomOf="@+id/btnContinue" />
 
