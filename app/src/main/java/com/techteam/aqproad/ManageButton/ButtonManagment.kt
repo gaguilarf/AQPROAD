@@ -43,22 +43,6 @@ class ButtonManagment(context: Context) {
                 button.draw(canvas)
             }
         }
-
-        /*buttonRetCrucificcion(canvas)
-        buttonEsp1(canvas)
-        buttonEsp2(canvas)
-        buttonEsp3(canvas)
-        //retablo principal
-        buttonRePrincipal(canvas)
-        //coro
-        buttonCoro(canvas)
-        //retablo de los fundadores botones
-        buttonRetFundadores(canvas)
-        buttonEsp5(canvas)
-        buttonEsp6(canvas)
-        buttonEsp7(canvas)
-        buttonCapillaIgnacio(canvas)
-        buttonAnteSacristiaAnt(canvas)*/
     }
 
     fun findButton(x: Float, y: Float): String {

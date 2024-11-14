@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#000">
+
+    <!-- Video ocupa toda la pantalla -->
+    <VideoView
+        android:id="@+id/fullscreenVideoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center" />
+
+    <!-- Controles encima del video -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:layout_gravity="bottom">
+
+        <!-- Botón de reproducción/pausa -->
+        <ImageButton
+            android:id="@+id/buttonPlayPauseFullscreen"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:src="@android:drawable/ic_media_play"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Reproducir/Pausar"
+            app:tint="#FF5722" />
+
+        <!-- Espaciado flexible -->
+        <View
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1" />
+
+        <!-- Botón de pantalla completa -->
+        <ImageButton
+            android:id="@+id/buttonExitFullscreen"
+            android:layout_width="25dp"
+            android:layout_height="25dp"
+            android:src="@drawable/icon_full_screen"
+            android:background="?attr/selectableItemBackground"
+            android:contentDescription="Salir de pantalla completa"
+            app:tint="#FF5722"
+            android:scaleType="fitCenter"/>
+    </LinearLayout>
+
+</FrameLayout>
