@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.techteam.aqproad"
-        minSdk = 24
+        minSdk = 25
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -43,7 +43,11 @@ android {
 
 dependencies {
 
-    implementation("com.google.code.gson:gson:2.11.0")
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+    implementation(libs.firebase.firestore.ktx)
+    implementation(libs.osmdroid.android)
+    implementation(libs.gson)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
