@@ -4,52 +4,61 @@ import android.Manifest
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.firestore.FirebaseFirestore
 import com.techteam.aqproad.R
-import com.techteam.aqproad.databinding.ActivityMapBinding
+import com.techteam.aqproad.databinding.FragmentMapBinding
 import org.osmdroid.util.GeoPoint
 import org.osmdroid.views.MapView
 import org.osmdroid.views.overlay.Marker
 import android.location.LocationManager
 import android.content.Context
 import android.util.Log
+import androidx.fragment.app.Fragment
 import org.osmdroid.config.Configuration
 import org.osmdroid.library.BuildConfig
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 
-class MapActivity : AppCompatActivity() {
+class MapFragment : Fragment() {
 
-    private lateinit var binding: ActivityMapBinding
+    private lateinit var binding: FragmentMapBinding
     private lateinit var mapView: MapView
     private lateinit var db: FirebaseFirestore
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        binding = ActivityMapBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentMapBinding.inflate(inflater, container, false)
+        val view = binding.root
 
         Configuration.getInstance().userAgentValue = BuildConfig.APPLICATION_ID
         mapView = binding.mapFragmentView
         mapView.setMultiTouchControls(true)
 
         db = FirebaseFirestore.getInstance()
+
         // Verificar permisos de ubicación
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
-        } else {
-            loadCurrentLocation()
+        context?.let {
+            if (ContextCompat.checkSelfPermission(it, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION), 1)
+            } else {
+                loadCurrentLocation()
+            }
         }
 
         // Cargar sitios turísticos desde Firestore
         loadTouristSites()
+
+        return view
     }
 
     private fun loadCurrentLocation() {
-        val locationManager = getSystemService(Context.LOCATION_SERVICE) as LocationManager
-        val location: Location? = if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+        val locationManager = requireContext().getSystemService(Context.LOCATION_SERVICE) as LocationManager
+        val location: Location? = if (ActivityCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
             locationManager.getLastKnownLocation(LocationManager.GPS_PROVIDER)
         } else {
             null
@@ -82,9 +91,8 @@ class MapActivity : AppCompatActivity() {
                     val nombre = document.getString("sitNom") ?: "Sitio"
                     sitios.add(nombre)
 
-                    addMarker(GeoPoint(sitCooX, sitCooY+0.0026), nombre)
+                    addMarker(GeoPoint(sitCooX, sitCooY + 0.0026), nombre)
                     Log.d("coor", "Coordenadas: lat: $sitCooX, lon: $sitCooY")
-
                 }
             }
             .addOnFailureListener { exception ->
@@ -93,15 +101,13 @@ class MapActivity : AppCompatActivity() {
             }
     }
 
-
     private fun addMarker(geoPoint: GeoPoint, title: String) {
         val marker = Marker(mapView)
         marker.position = geoPoint
         marker.title = title
-        marker.icon = ContextCompat.getDrawable(this, R.drawable.icon_marker) // Asegúrate de tener un drawable para el marcador
+        marker.icon = ContextCompat.getDrawable(requireContext(), R.drawable.icon_marker) // Asegúrate de tener un drawable para el marcador
         marker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM) // Ancla el marcador en la parte inferior
         mapView.overlays.add(marker)
         mapView.invalidate() // Actualiza el mapa
     }
-
 }
