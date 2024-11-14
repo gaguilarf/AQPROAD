@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "824259947533",
+    "project_id": "aqproad-c5eb7",
+    "storage_bucket": "aqproad-c5eb7.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:824259947533:android:fa82dc9b28ece87385f944",
+        "android_client_info": {
+          "package_name": "com.techteam.aqproad"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCecdbZIApeLFDCzfQEKxfDVQ_RC2xYH7U"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
