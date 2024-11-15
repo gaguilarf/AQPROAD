@@ -88,32 +88,6 @@ class FragmentRegister : Fragment() {
                         Toast.makeText(view.context, "Ha ocurrido un error inesperado al obtener el userName de la BD", Toast.LENGTH_SHORT).show()
                     }
                 )
-
-                auth.createUserWithEmailAndPassword(email, password)
-                    .addOnCompleteListener { task ->
-                        if (task.isSuccessful) {
-                            Log.d("REGISTER", "Usuario creado satisfactoriamnete")
-                            val user = auth.currentUser
-                            saveNewUser(name.text.toString(), mail.text.toString(), username.text.toString()) { sucess, error ->
-                                if (sucess) {
-                                    Toast.makeText(view.context, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
-                                }
-                                else {
-                                    Toast.makeText(view.context, "Error al guardar usuario: $error", Toast.LENGTH_SHORT).show()
-                                }
-                            }
-                            Log.d("TAG", user.toString())
-                            parentFragmentManager.popBackStack()
-                        }
-                        else {
-                            Log.w("REGISTER", "Fallo al crear el usuario", task.exception)
-                            Toast.makeText(
-                                view.context,
-                                "Authentication failed.",
-                                Toast.LENGTH_SHORT,
-                            ).show()
-                        }
-                    }
             }
             else {
                 Toast.makeText(view.context, "Vuelva a intentarlo", Toast.LENGTH_SHORT).show();
