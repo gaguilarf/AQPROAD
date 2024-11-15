@@ -91,6 +91,8 @@
             android:layout_marginTop="411dp"
             app:endIconMode="password_toggle"
             app:endIconTint="#575757"
+            app:hintAnimationEnabled="false"
+            app:hintEnabled="false"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.515"
             app:layout_constraintStart_toStartOf="parent"
