@@ -11,7 +11,9 @@ import android.widget.EditText
 import android.widget.TextView
 import com.techteam.aqproad.R
 import android.widget.Toast
+import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 class FragmentRegister : Fragment() {
@@ -55,6 +57,38 @@ class FragmentRegister : Fragment() {
                 val email = mail.text.toString()
                 val password = pass1.text.toString()
                 Log.d("TAAAAAAAAAAAAAAAAAAAG", "EMAIL: " + email + "\nPASS: " + password)
+
+                isUsernameTaken(username.text.toString(),
+                    onSuccess = { userNameTaken ->
+                        if(userNameTaken) {
+                            Toast.makeText(view.context, "Ya existe este nombre de ususario, pruebe otro", Toast.LENGTH_SHORT).show()
+                        }
+                        else {
+                            createUserWithEmailPass(email, password,
+                                onSuccess = { userFirebase ->
+                                    userFirebase.email?.let { it1 -> Log.d("EMAIL", it1.toString()) }
+                                    userFirebase.uid.let { it2 -> Log.d("UUID", it2.toString())}
+
+                                    saveNewUser(name.text.toString(), mail.text.toString(), username.text.toString()) { sucess, error ->
+                                        if (sucess) {
+                                            Toast.makeText(view.context, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
+                                        }
+                                        else {
+                                            Toast.makeText(view.context, "Error al guardar usuario: $error", Toast.LENGTH_SHORT).show()
+                                        }
+                                    }
+                                },
+                                onFailure = { error ->
+                                    Toast.makeText(view.context, error, Toast.LENGTH_SHORT).show()
+                                }
+                            )
+                        }
+                    },
+                    onFailure = {
+                        Toast.makeText(view.context, "Ha ocurrido un error inesperado al obtener el userName de la BD", Toast.LENGTH_SHORT).show()
+                    }
+                )
+
                 auth.createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
@@ -85,6 +119,41 @@ class FragmentRegister : Fragment() {
                 Toast.makeText(view.context, "Vuelva a intentarlo", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private fun isUsernameTaken(
+        userName: String,
+        onSuccess: (Boolean) -> Unit,
+        onFailure: () -> Unit
+    ) {
+        val db = FirebaseFirestore.getInstance()
+        db.collection("Usuario").document(userName).get()
+            .addOnSuccessListener { document ->
+                onSuccess(document.exists())
+            }
+            .addOnFailureListener { exception ->
+                Log.d("REGISTER", "Error al obtener el documento", exception)
+                onFailure()
+            }
+    }
+
+    private fun createUserWithEmailPass(
+        email: String,
+        password: String,
+        onSuccess: (FirebaseUser) -> Unit,
+        onFailure: (String) -> Unit
+    ) {
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener { task ->
+                if (task.isSuccessful) {
+                    auth.currentUser?.let {
+                        it -> onSuccess(it)
+                    }
+                }
+                else {
+                    onFailure(task.exception?.message ?: "Error al crear iniciar autenticacion")
+                }
+            }
     }
 
     private fun saveNewUser(
