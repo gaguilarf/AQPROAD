@@ -1,6 +1,7 @@
 package com.techteam.aqproad.Login
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -75,11 +76,11 @@ class FragmentLogin : Fragment() {
     private fun signInWithUsername(username: String, password: String) {
 
         getEmailByUsername(username,
-            onSuccess = {email ->
+            onSuccess = {email, urlPhoto ->
                 signInWithEmail(email, password,
                     onSuccess = { user ->
                         Log.d("LOGIN", "SIGNIN Exitoso")
-                        updatePerfil(user, username)
+                        updatePerfil(user, username, urlPhoto)
                         val intent = Intent(requireContext(), MainActivity::class.java)
                         startActivity(intent)
                         requireActivity().finish()
@@ -98,7 +99,7 @@ class FragmentLogin : Fragment() {
 
     private fun getEmailByUsername(
         username: String,
-        onSuccess: (String) -> Unit,
+        onSuccess: (String, String) -> Unit,
         onFailure: (String) -> Unit
     ) {
         val db = FirebaseFirestore.getInstance()
@@ -106,8 +107,9 @@ class FragmentLogin : Fragment() {
             .addOnSuccessListener {document ->
                 if (document.exists() && document.contains("email")) {
                     val email = document.getString("email")
-                    if (email != null) {
-                        onSuccess(email)
+                    val urlPhoto = document.getString("photoUrl")
+                    if (email != null && urlPhoto != null) {
+                        onSuccess(email, urlPhoto)
                     }
                     else {
                         onFailure("El correo no se encontró en el documento")
@@ -137,9 +139,10 @@ class FragmentLogin : Fragment() {
             }
     }
 
-    private fun updatePerfil(user: FirebaseUser, username: String){
+    private fun updatePerfil(user: FirebaseUser, username: String, urlPhoto: String){
         val profileUpdates = UserProfileChangeRequest.Builder()
             .setDisplayName(username)
+            .setPhotoUri(Uri.parse(urlPhoto))
             .build()
 
         user.updateProfile(profileUpdates)
