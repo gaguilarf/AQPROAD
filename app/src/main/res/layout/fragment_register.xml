@@ -82,23 +82,23 @@
             android:id="@+id/txtLogin"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
+            android:layout_marginTop="16dp"
+            android:clickable="true"
+            android:focusable="true"
             android:gravity="center_horizontal|center_vertical"
             android:text="Inicia sesión"
             android:textColor="#FF7F50"
             android:textSize="15dp"
-            android:clickable="true"
-            android:focusable="true"
             app:layout_constraintStart_toEndOf="@+id/txtQuestion"
             app:layout_constraintTop_toBottomOf="@+id/btnContinue" />
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout2"
-            android:layout_width="229dp"
-            android:layout_height="35dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:endIconMode="password_toggle"
             app:hintAnimationEnabled="false"
-            app:hintEnabled="false"
+            app:hintEnabled="true"
             app:layout_constraintBottom_toBottomOf="@+id/view"
             app:layout_constraintEnd_toEndOf="@+id/view"
             app:layout_constraintStart_toStartOf="@+id/view"
@@ -107,8 +107,8 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputVerifyPassword"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="229dp"
+                android:layout_height="34dp"
                 android:background="@drawable/login_rounded_edit_text"
                 android:ems="10"
                 android:gravity="start|center_vertical"
@@ -202,11 +202,11 @@
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/textInputLayout"
-            android:layout_width="229dp"
-            android:layout_height="34dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:endIconMode="password_toggle"
             app:hintAnimationEnabled="false"
-            app:hintEnabled="false"
+            app:hintEnabled="true"
             app:layout_constraintBottom_toBottomOf="@+id/view"
             app:layout_constraintEnd_toEndOf="@+id/view"
             app:layout_constraintStart_toStartOf="@+id/view"
@@ -215,15 +215,18 @@
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/inputPassword"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="229dp"
+                android:layout_height="34dp"
                 android:background="@drawable/login_rounded_edit_text"
                 android:ems="10"
                 android:hint="Crea una contraseña"
                 android:inputType="textPassword"
                 android:textColorHint="#575757"
                 android:textSize="14sp" />
+
+
         </com.google.android.material.textfield.TextInputLayout>
+
 
         <TextView
             android:id="@+id/txt2"
