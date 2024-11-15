@@ -5,8 +5,10 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
 import com.techteam.aqproad.Item.ItemFragment
 import com.techteam.aqproad.Login.FragmentLogin
 import com.techteam.aqproad.R
@@ -38,10 +40,21 @@ class HomeFragment : Fragment() {
 
         recyclerView.adapter = adapter
 
-
+        val txtUserName = rootView.findViewById<TextView>(R.id.txtHomeUsername)
+        val usuarioActual = FirebaseAuth.getInstance().currentUser
+        val userName = usuarioActual?.displayName ?: "Usuario"
+        txtUserName.text = "Hola, ${userName.toString()}!"
 
         return rootView
     }
+
+    /*override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val txtUserName = view.findViewById<TextView>(R.id.txtHomeUsername)
+        val usuarioActual = FirebaseAuth.getInstance().currentUser
+        val userName = usuarioActual?.displayName ?: "Usuario"
+        txtUserName.text = "Hola, ${userName.toString()}!"
+    }*/
 
     private fun getEdificaciones(): List<Edificacion> {
         return listOf(
