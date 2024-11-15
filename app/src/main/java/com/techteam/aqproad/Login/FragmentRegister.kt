@@ -71,6 +71,7 @@ class FragmentRegister : Fragment() {
 
                                     saveNewUser(name.text.toString(), mail.text.toString(), username.text.toString()) { sucess, error ->
                                         if (sucess) {
+                                            parentFragmentManager.popBackStack()
                                             Toast.makeText(view.context, "Usuario registrado exitosamente", Toast.LENGTH_SHORT).show()
                                         }
                                         else {
