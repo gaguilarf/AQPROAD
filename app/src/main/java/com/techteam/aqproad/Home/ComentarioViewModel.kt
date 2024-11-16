@@ -10,8 +10,12 @@ class ComentarioViewModel(private val repository: ComentarioRepository) : ViewMo
 
     private var fullList: List<Comentario> = listOf()  // Guardamos la lista completa
 
-    fun loadEdificaciones() {
+    fun loadComentarios() {
         fullList = repository.getComentarios()  // Cargar los datos completos
         _comentarios.value = fullList
+    }
+    fun addComentario(comentario: Comentario) {
+        repository.addComentario(comentario)
+        loadComentarios()  // Volver a cargar la lista con el nuevo comentario
     }
 }

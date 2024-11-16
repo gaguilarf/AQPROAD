@@ -94,7 +94,6 @@ class FragmentLogin : Fragment() {
                 Toast.makeText(viewGlobal.context, error, Toast.LENGTH_SHORT).show()
             }
         )
-
     }
 
     private fun getEmailByUsername(
