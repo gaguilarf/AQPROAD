@@ -12,7 +12,7 @@
         <!-- RatingBar para las estrellas -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="1391dp">
+            android:layout_height="match_parent">
 
             <!-- Imagen principal -->
             <ImageView
@@ -140,7 +140,7 @@
                 app:layout_constraintTop_toBottomOf="@+id/text_dalecalificacion" />
 
             <TextView
-                android:id="@+id/textView5"
+                android:id="@+id/txtv_autorcomentario"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="30dp"
@@ -171,7 +171,7 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
 
-                app:layout_constraintTop_toBottomOf="@+id/textView5" />
+                app:layout_constraintTop_toBottomOf="@+id/txtv_autorcomentario" />
 
             <Button
                 android:id="@+id/button"
@@ -208,21 +208,15 @@
                 app:layout_constraintTop_toBottomOf="@+id/cardView2"
                 tools:src="@tools:sample/avatars" />
 
-            <ScrollView
+            <androidx.recyclerview.widget.RecyclerView
                 android:layout_width="0dp"
-                android:layout_height="153dp"
+                android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="10dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView6">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" />
-            </ScrollView>
+                app:layout_constraintTop_toBottomOf="@+id/textView6" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
