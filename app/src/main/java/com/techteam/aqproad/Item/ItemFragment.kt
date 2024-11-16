@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -26,13 +27,21 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.techteam.aqproad.R
 import com.bumptech.glide.Glide
+import com.example.recyclerview.ComentarioAdapter
 import com.google.android.material.carousel.CarouselLayoutManager
 import com.google.android.material.carousel.CarouselSnapHelper
+import com.techteam.aqproad.Home.ComentarioViewModel
+import com.techteam.aqproad.Home.ComentarioRepository
+import androidx.lifecycle.Observer
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient:FusedLocationProviderClient
     private lateinit var view: View
     private lateinit var carouselRecyclerView: RecyclerView
+
+    private lateinit var recyView_comentarios: RecyclerView
+    private lateinit var viewModel_comentarios: ComentarioViewModel
+    private lateinit var adapter_comentarios: ComentarioAdapter
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -108,6 +117,24 @@ class ItemFragment : Fragment() {
             }*/
             saveUserRating(rating, view)
         }
+
+
+        // INICIO Comentarios de las edificaciones
+
+        recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
+
+        recyView_comentarios.layoutManager = LinearLayoutManager(requireContext())
+
+        val repository = ComentarioRepository()
+        viewModel_comentarios = ComentarioViewModel(repository)
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+            adapter_comentarios = ComentarioAdapter(comentarios)
+            recyView_comentarios.adapter = adapter_comentarios
+        })
+
+        viewModel_comentarios.loadEdificaciones()
+
+        // FIN Comentarios de las edificaciones
 
         return view
     }
