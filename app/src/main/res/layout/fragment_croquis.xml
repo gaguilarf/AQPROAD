@@ -5,6 +5,13 @@
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Item.CroquisFragment">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="20dp"
+        android:textSize="20dp"
+        android:text="La Iglesia de la Compañia" />
 
     <com.techteam.aqproad.Item.LaCompaniaView
         android:id="@+id/laCompaniaView"

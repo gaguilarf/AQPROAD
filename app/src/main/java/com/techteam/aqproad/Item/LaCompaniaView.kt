@@ -41,53 +41,57 @@ class LaCompaniaView constructor(
         paint.color = Color.BLACK
         paint.strokeWidth = 2f
 
-        // Draw the main rectangular structure (moved an additional 50 pixels to the right)
-        canvas.drawRect(210f, 35f, 962.528f, 455f, paint)
+        // Desplazamiento de 300 px a la derecha y 50 px hacia abajo
+        val offsetX = 300f
+        val offsetY = 50f
+
+        // Draw the main rectangular structure
+        canvas.drawRect(172f + offsetX, 35f + offsetY, 924.528f + offsetX, 455f + offsetY, paint)
 
         // Sacristía
-        canvas.drawRect(208.6f, 35f, 367.136f, 169.456f, paint)
+        canvas.drawRect(170.6f + offsetX, 35f + offsetY, 329.136f + offsetX, 169.456f + offsetY, paint)
         paint.textSize = 21f
-        canvas.drawText("Sacristía", 252f, 105f, paint)
+        canvas.drawText("Sacristía", 214f + offsetX, 105f + offsetY, paint)
 
         // Retablo de crucifixion
-        canvas.drawRect(367.136f, 35f, 537.537f, 169.456f, paint)
-        canvas.drawText("Retablo del\ncrucificado", 420f, 105f, paint)
+        canvas.drawRect(329.136f + offsetX, 35f + offsetY, 499.537f + offsetX, 169.456f + offsetY, paint)
+        canvas.drawText("Retablo del\ncrucificado", 382f + offsetX, 105f + offsetY, paint)
 
         // Fila de ambientes 1
-        canvas.drawRect(537.537f, 35f, 645.582f, 169.456f, paint)
-        canvas.drawText("Espacio 1", 560f, 105f, paint)
+        canvas.drawRect(499.537f + offsetX, 35f + offsetY, 607.582f + offsetX, 169.456f + offsetY, paint)
+        canvas.drawText("Espacio 1", 522f + offsetX, 105f + offsetY, paint)
 
-        canvas.drawRect(645.582f, 35f, 753.627f, 169.456f, paint)
-        canvas.drawText("Espacio 2", 680f, 105f, paint)
+        canvas.drawRect(607.582f + offsetX, 35f + offsetY, 715.627f + offsetX, 169.456f + offsetY, paint)
+        canvas.drawText("Espacio 2", 642f + offsetX, 105f + offsetY, paint)
 
-        canvas.drawRect(753.627f, 35f, 861.672f, 169.456f, paint)
-        canvas.drawText("Espacio 3", 780f, 105f, paint)
+        canvas.drawRect(715.627f + offsetX, 35f + offsetY, 823.672f + offsetX, 169.456f + offsetY, paint)
+        canvas.drawText("Espacio 3", 742f + offsetX, 105f + offsetY, paint)
 
-        canvas.drawRect(861.672f, 35f, 962.528f, 169.456f, paint)
-        canvas.drawText("Espacio 4", 885f, 105f, paint)
-
+        canvas.drawRect(823.672f + offsetX, 35f + offsetY, 924.528f + offsetX, 169.456f + offsetY, paint)
+        canvas.drawText("Espacio 4", 847f + offsetX, 105f + offsetY, paint)
 
         // Fila de ambientes 2
-        canvas.drawRect(537.537f, 325.521f, 645.582f, 455f, paint)
-        canvas.drawText("Espacio 5", 560f, 375f, paint)
+        canvas.drawRect(499.537f + offsetX, 325.521f + offsetY, 607.582f + offsetX, 455f + offsetY, paint)
+        canvas.drawText("Espacio 5", 522f + offsetX, 375f + offsetY, paint)
 
+        canvas.drawRect(607.582f + offsetX, 325.521f + offsetY, 715.627f + offsetX, 455f + offsetY, paint)
+        canvas.drawText("Espacio 6", 642f + offsetX, 375f + offsetY, paint)
 
-        canvas.drawRect(645.582f, 325.521f, 753.627f, 455f, paint)
-        canvas.drawText("Espacio 6", 680f, 375f, paint)
+        canvas.drawRect(715.627f + offsetX, 325.521f + offsetY, 823.672f + offsetX, 455f + offsetY, paint)
+        canvas.drawText("Espacio 7", 742f + offsetX, 375f + offsetY, paint)
 
-        canvas.drawRect(753.627f, 325.521f, 861.672f, 455f, paint)
-        canvas.drawText("Espacio 7", 780f, 375f, paint)
-
-        canvas.drawRect(861.672f, 325.521f, 962.528f, 455f, paint)
-        canvas.drawText("Espacio 8", 885f, 375f, paint)
+        canvas.drawRect(823.672f + offsetX, 325.521f + offsetY, 924.528f + offsetX, 455f + offsetY, paint)
+        canvas.drawText("Espacio 8", 847f + offsetX, 375f + offsetY, paint)
 
         // Capilla san Ignacio
-        canvas.drawRect(68.67f, 325.521f, 244.89f, 501.74f, paint)
-        canvas.drawText("Capilla de San Ignacio", 70f, 375f, paint)
+        canvas.drawRect(30.67f + offsetX, 325.521f + offsetY, 206.89f + offsetX, 501.74f + offsetY, paint)
+        canvas.drawText("Capilla de San Ignacio", 32f + offsetX, 375f + offsetY, paint)
 
         // Antesacristia antigua
-        canvas.drawRect(244.89f, 325.521f, 394.41f, 501.74f, paint)
-        canvas.drawText("Capilla de San Ignacio", 260f, 375f, paint)
+        canvas.drawRect(206.89f + offsetX, 325.521f + offsetY, 356.41f + offsetX, 501.74f + offsetY, paint)
+        canvas.drawText("Antesacristia antigua", 222f + offsetX, 375f + offsetY, paint)
+
         buttonDraw.draw(canvas)
     }
 }
+
