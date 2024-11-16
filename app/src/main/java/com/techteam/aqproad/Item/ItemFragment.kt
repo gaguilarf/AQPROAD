@@ -5,6 +5,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +19,9 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
@@ -25,10 +30,18 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.techteam.aqproad.R
 import com.bumptech.glide.Glide
+import com.example.recyclerview.ComentarioAdapter
+import com.techteam.aqproad.Home.ComentarioRepository
+import com.techteam.aqproad.Home.ComentarioViewModel
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient:FusedLocationProviderClient
     private lateinit var view: View
+
+    private lateinit var recyView_comentarios: RecyclerView
+    private lateinit var viewModel_comentarios: ComentarioViewModel
+    private lateinit var adapter_comentarios: ComentarioAdapter
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -43,11 +56,11 @@ class ItemFragment : Fragment() {
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         val ratingBar: RatingBar = view.findViewById(R.id.ratingCalif)
-        val imagenprueba: ImageView = view.findViewById(R.id.imagenPrueba)
+        //val imagenprueba: ImageView = view.findViewById(R.id.imagenPrueba)
 
-        Glide.with(view.context)
+        /*Glide.with(view.context)
             .load("https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg")
-            .into(imagenprueba)
+            .into(imagenprueba)*/
 
         btnExpand.setOnClickListener {
             val fragment = CroquisFragment()
@@ -94,6 +107,23 @@ class ItemFragment : Fragment() {
             }*/
             saveUserRating(rating, view)
         }
+
+        // INICIO Comentarios de las edificaciones
+
+        recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
+
+        recyView_comentarios.layoutManager = LinearLayoutManager(requireContext())
+
+        val repository = ComentarioRepository()
+        viewModel_comentarios = ComentarioViewModel(repository)
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+            adapter_comentarios = ComentarioAdapter(comentarios)
+            recyView_comentarios.adapter = adapter_comentarios
+        })
+
+        viewModel_comentarios.loadEdificaciones()
+
+        // FIN Comentarios de las edificaciones
 
         return view
     }

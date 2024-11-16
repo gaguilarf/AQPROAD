@@ -197,18 +197,8 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
-            <ImageView
-                android:id="@+id/imagenPrueba"
-                android:layout_width="100dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="34dp"
-                android:layout_marginEnd="39dp"
-                android:scaleType="fitCenter"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView2"
-                tools:src="@tools:sample/avatars" />
-
             <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyView_comentarios"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"

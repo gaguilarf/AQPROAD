@@ -1,8 +1,6 @@
 package com.techteam.aqproad.Home
 
-import android.content.Context
-
-class ComentarioRepository(private val context: Context) {
+class ComentarioRepository() {
     fun getComentarios(): List<Comentario> {
         val comentarios = mutableListOf<Comentario>()
 
