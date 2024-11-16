@@ -117,12 +117,13 @@
                 android:id="@+id/text_dalecalificacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="30dp"
                 android:maxLines="3"
                 android:text="Dale una calificación a este lugar"
                 android:textAlignment="center"
                 android:textSize="14sp"
-                tools:layout_editor_absoluteX="-16dp"
-                tools:layout_editor_absoluteY="1068dp" />
+                app:layout_constraintTop_toBottomOf="@+id/recyclerCarousel"
+                tools:layout_editor_absoluteX="-16dp" />
 
             <RatingBar
                 android:id="@+id/ratingCalif"
@@ -198,16 +199,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerCarousel"
-                android:layout_width="0dp"
-                android:layout_height="211dp"
-                android:layout_marginTop="20dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/textView7"
-                app:layout_constraintVertical_bias="0.043"
-                tools:layout_editor_absoluteX="-16dp" />
-
             <TextView
                 android:id="@+id/textView7"
                 android:layout_width="wrap_content"
@@ -219,6 +210,20 @@
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView2" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerCarousel"
+                android:layout_width="match_parent"
+                android:layout_height="280dp"
+                android:layout_marginTop="20dp"
+                android:clipChildren="false"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
+                app:layout_constraintTop_toBottomOf="@+id/textView7"
+                tools:layout_editor_absoluteX="0dp" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

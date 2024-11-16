@@ -32,9 +32,22 @@ import com.google.android.material.carousel.CarouselSnapHelper
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient:FusedLocationProviderClient
     private lateinit var view: View
+    private lateinit var carouselRecyclerView: RecyclerView
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+    }
+
+    private fun setupCarouselRecyclerView() {
+        carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
+        CarouselSnapHelper().attachToRecyclerView(carouselRecyclerView)
+        carouselRecyclerView.adapter = CarouselAdapter(images = getImages())
+    }
+
+    private fun getImages() : List<String> {
+        return listOf(
+            "https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg",
+            "https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
     }
 
     override fun onCreateView(
@@ -46,19 +59,9 @@ class ItemFragment : Fragment() {
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         val ratingBar: RatingBar = view.findViewById(R.id.ratingCalif)
-        val recyclerCarousel: RecyclerView = view.findViewById(R.id.recyclerCarousel)
 
-        recyclerCarousel.setHasFixedSize(true)
-        recyclerCarousel.layoutManager = CarouselLayoutManager()
-        CarouselSnapHelper().attachToRecyclerView(recyclerCarousel)
-
-        val imageList = mutableListOf<String>()
-        imageList.add("https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg")
-        imageList.add("https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
-
-        val adapter = CarouselAdapter(imageList)
-        recyclerCarousel.adapter = adapter
-
+        // Arranque de carrusel
+        setupCarouselRecyclerView()
 
         btnExpand.setOnClickListener {
             val fragment = CroquisFragment()
