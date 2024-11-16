@@ -17,6 +17,7 @@ import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
@@ -25,6 +26,8 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.auth
 import com.techteam.aqproad.R
 import com.bumptech.glide.Glide
+import com.google.android.material.carousel.CarouselLayoutManager
+import com.google.android.material.carousel.CarouselSnapHelper
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient:FusedLocationProviderClient
@@ -43,11 +46,19 @@ class ItemFragment : Fragment() {
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         val ratingBar: RatingBar = view.findViewById(R.id.ratingCalif)
-        val imagenprueba: ImageView = view.findViewById(R.id.imagenPrueba)
+        val recyclerCarousel: RecyclerView = view.findViewById(R.id.recyclerCarousel)
 
-        Glide.with(view.context)
-            .load("https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg")
-            .into(imagenprueba)
+        recyclerCarousel.setHasFixedSize(true)
+        recyclerCarousel.layoutManager = CarouselLayoutManager()
+        CarouselSnapHelper().attachToRecyclerView(recyclerCarousel)
+
+        val imageList = mutableListOf<String>()
+        imageList.add("https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg")
+        imageList.add("https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
+
+        val adapter = CarouselAdapter(imageList)
+        recyclerCarousel.adapter = adapter
+
 
         btnExpand.setOnClickListener {
             val fragment = CroquisFragment()
