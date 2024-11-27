@@ -115,24 +115,30 @@ class ItemFragment : Fragment() {
         }
 
         // Configuración de la RatingBar y permisos para calificar
+        var isResettingRating = false
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
-            val permite = isUserLoggedIn()
-            if (permite) {
+            if (isResettingRating) return@setOnRatingBarChangeListener
+
+            if (isUserLoggedIn()) {
                 isUserAtLocation { isAtLocation ->
                     if (!isAtLocation) {
                         showToast("Debe estar en la ubicación de la edificación para calificar.", view)
+                        isResettingRating = true
                         ratingBar.rating = 0f
+                        isResettingRating = false
                         return@isUserAtLocation
                     } else {
                         showToast("Puedes calificar.", view)
+                        saveUserRating(rating, view)
                     }
                 }
             } else {
                 showToast("Debe iniciar sesión para calificar.", view)
+                isResettingRating = true
                 ratingBar.rating = 0f
+                isResettingRating = false
                 return@setOnRatingBarChangeListener
             }
-            saveUserRating(rating, view)
         }
 
         return view
@@ -155,6 +161,7 @@ class ItemFragment : Fragment() {
     }
 
     private fun saveUserRating(rating: Float, view: View) {
+
         showToast("Gracias por calificar con $rating estrellas.", view)
     }
 
@@ -184,7 +191,6 @@ class ItemFragment : Fragment() {
                 val distance = FloatArray(1)
                 Location.distanceBetween(userLatitude, userLongitude, targetLatitude, targetLongitude, distance)
                 val tolerance = 60.0f
-                showToast("Sí lee ubi", view)
                 onResult(distance[0] <= tolerance)
             } else {
                 showToast("No puede obtener la ubicación", view)
