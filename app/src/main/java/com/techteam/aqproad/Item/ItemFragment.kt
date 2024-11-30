@@ -28,7 +28,6 @@ import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
 import com.techteam.aqproad.Home.Comentario
-import com.techteam.aqproad.Item.itemDB.DataItemDB
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 
 class ItemFragment : Fragment() {
