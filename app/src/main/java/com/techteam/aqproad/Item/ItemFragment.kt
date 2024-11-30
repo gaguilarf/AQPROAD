@@ -35,30 +35,57 @@ import com.google.android.material.carousel.CarouselSnapHelper
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
+import com.google.firebase.firestore.FirebaseFirestore
 import com.techteam.aqproad.Home.Comentario
+import org.osmdroid.util.GeoPoint
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
-    private lateinit var view: View
+    //private lateinit var view: View
     private lateinit var carouselRecyclerView: RecyclerView
     private lateinit var recyView_comentarios: RecyclerView
     private lateinit var viewModel_comentarios: ComentarioViewModel
     private lateinit var adapter_comentarios: ComentarioAdapter
     private lateinit var editTextTextMultiLine: EditText  // Campo de texto para el comentario
 
+    private lateinit var ratingBar: RatingBar
+
+    //private var buildingName: String? = null // nombre de la edificación
+    private var buildingID: Int?=null
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
+        private const val ARG_BUILDING_ID = "building_id"
+
+        fun newInstance(buildingId: Int): ItemFragment { //
+            val fragment = ItemFragment()
+            val args = Bundle() // creando bundle
+            args.putInt(ARG_BUILDING_ID, buildingId) //agregando id de la edificacion al bundle
+            //args.putString(ARG_BUILDING_NAME, buildingId)
+            fragment.arguments = args //asignando el bundle al fragment
+            return fragment
+        }
+    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        buildingID = arguments?.getInt(ARG_BUILDING_ID)?:0//recupera el id de la edificacion pasada
+        //buildingName = arguments?.getString(ARG_BUILDING_NAME)
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
     }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
-        view = inflater.inflate(R.layout.fragment_item, container, false)
+        val view = inflater.inflate(R.layout.fragment_item, container, false)
+        setupUI(view)
+        setupObservers()
+        return view
 
         // Referencias a los elementos UI
-        val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
+        /*val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         val ratingBar: RatingBar = view.findViewById(R.id.ratingCalif)
         editTextTextMultiLine = view.findViewById<EditText>(R.id.editTextTextMultiLine)  // EditText para comentarios
 
@@ -139,30 +166,139 @@ class ItemFragment : Fragment() {
                 isResettingRating = false
                 return@setOnRatingBarChangeListener
             }
-        }
+        }*/
 
-        return view
+    }
+
+    private fun setupUI(view: View) {
+        //configurar RecyclerView del carrusel
+        carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
+        setupCarouselRecyclerView()
+
+        //configurar RecyclerView de comentarios
+        recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
+        recyView_comentarios.layoutManager = LinearLayoutManager(requireContext())
+
+        // EditText para nuevo comentario
+        editTextTextMultiLine = view.findViewById<EditText>(R.id.editTextTextMultiLine)  // EditText para comentarios
+
+        // RatingBar y lógica asociada
+        ratingBar = view.findViewById(R.id.ratingCalif)
+        setupRatingBar()
+
+        val btnSendComment: Button = view.findViewById<Button>(R.id.button_send_comment)
+        btnSendComment.setOnClickListener{handleSendComment()}
+
+        val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
+        btnExpand.setOnClickListener{ openCroquisFragment()}
+
+    }
+
+    private fun setupObservers() {
+        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
+        viewModel_comentarios = ComentarioViewModel(repository)
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+            adapter_comentarios = ComentarioAdapter(comentarios)
+            recyView_comentarios.adapter = adapter_comentarios
+        })
+        viewModel_comentarios.loadComentarios()
     }
 
     private fun setupCarouselRecyclerView() {
-        carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
-        CarouselSnapHelper().attachToRecyclerView(carouselRecyclerView)
-        carouselRecyclerView.adapter = CarouselAdapter(images = getImages())
+        showToast("Este es el id del sitio pasado $buildingID")
+        val images = getImages()
+        carouselRecyclerView.adapter = CarouselAdapter(images)
     }
 
-    private fun getImages() : List<String> {
+    private fun getImages() : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
         return listOf(
             "https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg",
             "https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
     }
 
-    private fun showToast(message: String, view: View) {
-        Toast.makeText(view.context, message, Toast.LENGTH_SHORT).show()
+    private fun setupRatingBar() { //falta obtener el rating de la edificacion respectiva
+        var isResettingRating = false
+        ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
+            if (isResettingRating) return@setOnRatingBarChangeListener
+
+            if (isUserLoggedIn()) {
+                isUserAtLocation { isAtLocation ->
+                    if (!isAtLocation) {
+                        showToast("Debe estar en la ubicación de la edificación para calificar.")
+                        isResettingRating = true
+                        ratingBar.rating = 0f
+                        isResettingRating = false
+                        return@isUserAtLocation
+                    } else {
+                        showToast("Puedes calificar.")
+                        saveUserRating(rating)
+                    }
+                }
+            } else {
+                showToast("Debe iniciar sesión para calificar.")
+                isResettingRating = true
+                ratingBar.rating = 0f
+                isResettingRating = false
+                return@setOnRatingBarChangeListener
+            }
+        }
     }
 
-    private fun saveUserRating(rating: Float, view: View) {
+    private fun handleSendComment() { //es para agregar comentarios, falta enviarlo a la base de datos
+        val commentText = editTextTextMultiLine.text.toString().trim()
+        if (commentText.isNotEmpty()) {
+            val usuarioActual = FirebaseAuth.getInstance().currentUser
+            val userName = usuarioActual?.displayName ?: "Usuario"
+            val newComment = Comentario(
+                id = (viewModel_comentarios.comentarios.value?.size ?: 0) + 1,  // Generar un id secuencial para el comentario
+                autor = userName.toString(),
+                contenido = commentText
+            )
 
-        showToast("Gracias por calificar con $rating estrellas.", view)
+            // Agregar el nuevo comentario a la lista
+            viewModel_comentarios.addComentario(newComment)
+
+            // Limpiar el campo de texto después de enviar el comentario
+            editTextTextMultiLine.text.clear()
+
+            // Mostrar un mensaje de éxito
+            showToast("Comentario enviado")
+        } else {
+            showToast("Por favor escribe un comentario")
+        }
+    }
+
+    private fun openCroquisFragment() { //Falta pasar id de la edificacion o el nombre para que la clase CrokisFragment renderice el correcto
+        val fragment = CroquisFragment()
+        val transaction: FragmentTransaction = requireActivity().supportFragmentManager.beginTransaction()
+        transaction.replace(R.id.main_container, fragment)
+        transaction.addToBackStack(null)
+        transaction.commit()
+    }
+
+    private fun saveUserRating(rating: Float) {
+        /*val db = FirebaseFirestore.getInstance()
+
+
+        db.collection("Sitios_turisticos")
+            .orderBy("sitID") // Ordenar por sitID
+            .get()
+            .addOnSuccessListener { documents ->
+
+                // Iteramos sobre los documentos y agregamos el nombre del sitio a la lista
+                for (document in documents) {
+                    if (document.getString("sitNom") == "Iglesia de la Compañia") {
+                        //aqui se actualiza el campo sitPun y sitCon
+                        document
+                    }
+                }
+            }
+            .addOnFailureListener { exception ->
+                // Mostrar un Toast con el error si la carga falla
+                exception.printStackTrace()
+            }*/
+
+        showToast("Gracias por calificar con $rating estrellas.")
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -179,7 +315,7 @@ class ItemFragment : Fragment() {
             ActivityCompat.requestPermissions(requireActivity(),
                 arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION),
                 LOCATION_PERMISSION_REQUEST_CODE)
-            showToast("No tiene permisos", view)
+            showToast("No tiene permisos")
             onResult(false)
             return
         }
@@ -193,10 +329,14 @@ class ItemFragment : Fragment() {
                 val tolerance = 60.0f
                 onResult(distance[0] <= tolerance)
             } else {
-                showToast("No puede obtener la ubicación", view)
+                showToast("No puede obtener la ubicación")
                 onResult(false)
             }
         })
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 }
 
