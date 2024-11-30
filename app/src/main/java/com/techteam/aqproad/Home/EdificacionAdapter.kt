@@ -37,6 +37,7 @@ class EdificacionAdapter(
                 if (position != RecyclerView.NO_POSITION) {
                     // Abrir LaCompaniaView cuando se hace clic en el ítem
                     val intent = Intent(itemView.context, SitioActivity::class.java)
+                    intent.putExtra("SITIO_ID", edificaciones[position].id)
                     itemView.context.startActivity(intent)
                 }
             }
