@@ -56,9 +56,9 @@ class HomeFragment : Fragment() {
         txtUserName.text = "Hola, ${userName.toString()}!"
     }*/
 
-    private fun getEdificaciones(): List<Edificacion> {
+    private fun getEdificaciones(): List<Edificacion> { //aqui deeb ir un repository para deolver las edificaciones actuales
         return listOf(
-            Edificacion(1, "https://www.example.com/image.jpg", "El Mirador Yanahuara", "Yanahuara, Arequipa", "4.8", false),
+            Edificacion(1, "https://www.example.com/image.jpg", "Iglesia de la compañia", "Arequipa, Arequipa", "4.8", false),
             Edificacion(2, "https://www.example.com/image2.jpg", "Plaza de Armas", "Arequipa, Perú", "4.5", true),
             Edificacion(3, "https://www.example.com/image3.jpg", "Monasterio de Santa Catalina", "Arequipa, Perú", "5.0", false)
         )
