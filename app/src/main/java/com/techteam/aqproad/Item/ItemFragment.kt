@@ -1,22 +1,19 @@
 package com.techteam.aqproad.Item
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
-import android.widget.ImageView
 import android.widget.RatingBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -24,20 +21,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
-import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.auth
 import com.techteam.aqproad.R
-import com.bumptech.glide.Glide
 import com.example.recyclerview.ComentarioAdapter
-import com.google.android.material.carousel.CarouselLayoutManager
-import com.google.android.material.carousel.CarouselSnapHelper
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
-import com.google.firebase.firestore.FirebaseFirestore
 import com.techteam.aqproad.Home.Comentario
-import org.osmdroid.util.GeoPoint
+import com.techteam.aqproad.Item.itemDB.DataItemDB
+import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -49,6 +41,9 @@ class ItemFragment : Fragment() {
     private lateinit var editTextTextMultiLine: EditText  // Campo de texto para el comentario
 
     private lateinit var ratingBar: RatingBar
+    private lateinit var ratingManagerDB: RatingManagerDB
+    private lateinit var ratingPuntajeTotal: TextView
+
 
     //private var buildingName: String? = null // nombre de la edificación
     private var buildingID: Int?=null
@@ -73,6 +68,8 @@ class ItemFragment : Fragment() {
         buildingID = arguments?.getInt(ARG_BUILDING_ID)?:0//recupera el id de la edificacion pasada
         //buildingName = arguments?.getString(ARG_BUILDING_NAME)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        ratingManagerDB = RatingManagerDB()
     }
 
     override fun onCreateView(
@@ -183,7 +180,16 @@ class ItemFragment : Fragment() {
         editTextTextMultiLine = view.findViewById<EditText>(R.id.editTextTextMultiLine)  // EditText para comentarios
 
         // RatingBar y lógica asociada
+        ratingPuntajeTotal = view.findViewById<TextView>(R.id.text_reviews)
         ratingBar = view.findViewById(R.id.ratingCalif)
+        buildingID?.let {
+            ratingManagerDB.getActualRatingBuild(it) { message, pt ->
+                if (pt != null)
+                    ratingPuntajeTotal.text = "${pt.toFloat()} (15 reseñas)"
+                else
+                    message?.let { it1 -> showToast(it1) }
+            }
+        }
         setupRatingBar()
 
         val btnSendComment: Button = view.findViewById<Button>(R.id.button_send_comment)
@@ -277,27 +283,13 @@ class ItemFragment : Fragment() {
     }
 
     private fun saveUserRating(rating: Float) {
-        /*val db = FirebaseFirestore.getInstance()
+        val usuarioActual = FirebaseAuth.getInstance().currentUser?.displayName?:"Usuario"
 
-
-        db.collection("Sitios_turisticos")
-            .orderBy("sitID") // Ordenar por sitID
-            .get()
-            .addOnSuccessListener { documents ->
-
-                // Iteramos sobre los documentos y agregamos el nombre del sitio a la lista
-                for (document in documents) {
-                    if (document.getString("sitNom") == "Iglesia de la Compañia") {
-                        //aqui se actualiza el campo sitPun y sitCon
-                        document
-                    }
-                }
+        buildingID?.let {
+            ratingManagerDB.saveRating(it, rating, usuarioActual){ mensaje ->
+                showToast(mensaje)
             }
-            .addOnFailureListener { exception ->
-                // Mostrar un Toast con el error si la carga falla
-                exception.printStackTrace()
-            }*/
-
+        }
         showToast("Gracias por calificar con $rating estrellas.")
     }
 
