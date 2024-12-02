@@ -4,15 +4,21 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
-class ComentarioViewModel(private val repository: ComentarioRepository) : ViewModel() {
+class ComentarioViewModel(private val repository: ComentarioRepository, val commentsDBManager: ComentariosDBManager) : ViewModel() {
     private val _comentarios = MutableLiveData<List<Comentario>>()
     val comentarios: LiveData<List<Comentario>> get() = _comentarios
 
     private var fullList: List<Comentario> = listOf()  // Guardamos la lista completa
 
     fun loadComentarios() {
-        fullList = repository.getComentarios()  // Cargar los datos completos
-        _comentarios.value = fullList
+        commentsDBManager.getCommentsBySite(sitId) { comentarios, error ->
+            if (error != null) {
+                // Manejar el error si es necesario
+                Log.e("ComentarioViewModel", error)
+            } else {
+                _comentarios.value = comentarios
+            }
+        }
     }
     fun addComentario(comentario: Comentario) {
         repository.addComentario(comentario)

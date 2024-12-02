@@ -37,7 +37,11 @@ import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
 import com.google.firebase.firestore.FirebaseFirestore
 import com.techteam.aqproad.Home.Comentario
+import com.techteam.aqproad.Item.itemDB.ComentariosManagerDB
 import org.osmdroid.util.GeoPoint
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -49,6 +53,7 @@ class ItemFragment : Fragment() {
     private lateinit var editTextTextMultiLine: EditText  // Campo de texto para el comentario
 
     private lateinit var ratingBar: RatingBar
+    private lateinit var commentManagerDB: ComentariosManagerDB
 
     //private var buildingName: String? = null // nombre de la edificación
     private var buildingID: Int?=null
@@ -73,6 +78,8 @@ class ItemFragment : Fragment() {
         buildingID = arguments?.getInt(ARG_BUILDING_ID)?:0//recupera el id de la edificacion pasada
         //buildingName = arguments?.getString(ARG_BUILDING_NAME)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+
+        commentManagerDB = ComentariosManagerDB()
     }
 
     override fun onCreateView(
@@ -195,13 +202,13 @@ class ItemFragment : Fragment() {
     }
 
     private fun setupObservers() {
-        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
-        viewModel_comentarios = ComentarioViewModel(repository)
-        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner) { comentarios ->
             adapter_comentarios = ComentarioAdapter(comentarios)
             recyView_comentarios.adapter = adapter_comentarios
-        })
-        viewModel_comentarios.loadComentarios()
+        }
+
+        // Asegúrate de pasar el buildingID al cargar los comentarios
+        buildingID?.let { viewModel_comentarios.loadComentarios(it) }
     }
 
     private fun setupCarouselRecyclerView() {
@@ -243,7 +250,7 @@ class ItemFragment : Fragment() {
             }
         }
     }
-
+/*
     private fun handleSendComment() { //es para agregar comentarios, falta enviarlo a la base de datos
         val commentText = editTextTextMultiLine.text.toString().trim()
         if (commentText.isNotEmpty()) {
@@ -266,6 +273,44 @@ class ItemFragment : Fragment() {
         } else {
             showToast("Por favor escribe un comentario")
         }
+    }*/
+    private fun handleSendComment() { //es para agregar comentarios, falta enviarlo a la base de datos
+        val commentText = editTextTextMultiLine.text.toString().trim()
+        if (commentText.isNotEmpty()) {
+            val usuarioActual = FirebaseAuth.getInstance().currentUser
+            val userName = usuarioActual?.displayName ?: "Usuario"
+            val newComment = Comentario(
+                id = (viewModel_comentarios.comentarios.value?.size ?: 0) + 1,  // Generar un id secuencial para el comentario
+                autor = userName.toString(),
+                contenido = commentText
+            )
+
+            // Enviar el comentario a Firebase
+            saveUserComment(commentText)
+
+            // Agregar el nuevo comentario a la lista
+            viewModel_comentarios.addComentario(newComment)
+
+            // Limpiar el campo de texto después de enviar el comentario
+            editTextTextMultiLine.text.clear()
+
+            // Mostrar un mensaje de éxito
+            showToast("Comentario enviado")
+        } else {
+            showToast("Por favor escribe un comentario")
+        }
+    }
+
+    private fun saveUserComment(comment: String) {
+        val usuarioActual = FirebaseAuth.getInstance().currentUser?.displayName ?: "Usuario"
+        val currentDate = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+
+        buildingID?.let {
+            commentManagerDB.saveComment(it, usuarioActual, comment, currentDate) { mensaje ->
+                showToast(mensaje)
+            }
+        }
+        showToast("Gracias por comentar: \"$comment\".")
     }
 
     private fun openCroquisFragment() { //Falta pasar id de la edificacion o el nombre para que la clase CrokisFragment renderice el correcto
