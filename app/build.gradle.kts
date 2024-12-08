@@ -61,5 +61,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("io.coil-kt:coil:2.5.0")
+    implementation (libs.play.services.location.v2101)
+
 
 }

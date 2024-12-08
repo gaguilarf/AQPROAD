@@ -29,18 +29,26 @@ class MainActivity : AppCompatActivity() {
         val bottomNavigationView = binding.bottomNavView
         bottomNavigationView.setOnNavigationItemSelectedListener { item ->
             when (item.itemId) {
-                R.id.home_menu -> loadFragment(HomeFragment())  // Reemplaza con tu fragmento de Home
+                R.id.home_menu -> loadFragment(HomeFragment())
                 R.id.map_menu -> loadFragment(MapFragment())
-                R.id.favorites_menu -> loadFragment(FavoritesFragment())  // Reemplaza con tu fragmento de favoritos
-                R.id.user_menu -> loadFragment(UserFragment())  // Reemplaza con tu fragmento de usuario
+                R.id.favorites_menu -> loadFragment(FavoritesFragment())
+                R.id.user_menu -> loadFragment(UserFragment())
                 else -> false
             }
             true
         }
 
-        // Cargar fragmento inicial
         if (savedInstanceState == null) {
-            loadFragment(HomeFragment())  // Cargar fragmento inicial (Home)
+            loadFragment(HomeFragment())
+        }
+
+        val navigateTo = intent.getStringExtra("navigate_to")
+        if (navigateTo == "MapFragment") {
+            // Navega al fragmento de mapa
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, MapFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
@@ -49,4 +57,5 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.main_container, fragment)
             .commit()
     }
+
 }
