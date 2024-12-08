@@ -37,7 +37,7 @@ class EdificacionAdapter(
                 if (position != RecyclerView.NO_POSITION) {
                     // Abrir LaCompaniaView cuando se hace clic en el ítem
                     val intent = Intent(itemView.context, SitioActivity::class.java)
-                    intent.putExtra("SITIO_ID", edificaciones[position].id)
+                    intent.putExtra("SITIO_ID", edificaciones[position].sitId)
                     itemView.context.startActivity(intent)
                 }
             }
@@ -53,13 +53,13 @@ class EdificacionAdapter(
         val edificacion = edificaciones[position]
 
         // Asignar los datos al item
-        holder.titleText.text = edificacion.titulo
-        holder.locationText.text = edificacion.ubicacion
-        holder.ratingText.text = edificacion.calificacion
+        holder.titleText.text = edificacion.sitNom
+        holder.locationText.text = edificacion.sitNom
+        holder.ratingText.text = edificacion.sitPun.toString()
 
         // Actualizar el estado del "me gusta"
-        val likeResId = if (edificacion.liked) R.drawable.icon_heart_filled else R.drawable.icon_heart
-        holder.likeButton.setImageResource(likeResId)
+        //val likeResId = if (edificacion.liked) R.drawable.icon_heart_filled else R.drawable.icon_heart
+        //holder.likeButton.setImageResource(likeResId)
     }
 
     override fun getItemCount(): Int = edificaciones.size

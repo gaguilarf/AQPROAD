@@ -8,14 +8,14 @@ class ComentarioViewModel(private val repository: ComentarioRepository) : ViewMo
     private val _comentarios = MutableLiveData<List<Comentario>>()
     val comentarios: LiveData<List<Comentario>> get() = _comentarios
 
-    private var fullList: List<Comentario> = listOf()  // Guardamos la lista completa
+    private var fullList: List<Comentario> = listOf()
 
     fun loadComentarios() {
-        fullList = repository.getComentarios()  // Cargar los datos completos
+        fullList = repository.getComentarios()
         _comentarios.value = fullList
     }
     fun addComentario(comentario: Comentario) {
         repository.addComentario(comentario)
-        loadComentarios()  // Volver a cargar la lista con el nuevo comentario
+        loadComentarios()
     }
 }

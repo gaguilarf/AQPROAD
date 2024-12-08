@@ -158,7 +158,6 @@
 
         </LinearLayout>
 
-        <!-- RecyclerView para mostrar lugares -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_places"
             android:layout_width="match_parent"
