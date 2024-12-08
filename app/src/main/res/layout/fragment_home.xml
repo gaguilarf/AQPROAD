@@ -1,14 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Home.HomeFragment">
+    tools:context=".Home.HomeFragment"
+    android:fillViewport="true">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:padding="14dp">
 
@@ -35,7 +36,7 @@
                 <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Explora Arequipa!"/>
+                    android:text="Explora Arequipa!" />
             </LinearLayout>
 
             <!-- Imagen de usuario o icono -->
@@ -62,7 +63,7 @@
                 android:layout_weight="3"
                 android:paddingStart="20dp"
                 android:paddingEnd="20dp"
-                android:hint="Buscar Lugares"/>
+                android:hint="Buscar Lugares" />
 
             <ImageButton
                 android:layout_width="0dp"
@@ -87,14 +88,14 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="Lugares Populares"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:text="Ver Todos"
-                android:gravity="center_vertical"/>
+                android:gravity="center_vertical" />
 
         </LinearLayout>
 
@@ -110,8 +111,6 @@
                 android:id="@+id/button_toggle_group"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:divider="@drawable/divider"
-                android:showDividers="middle"
                 android:orientation="horizontal"
                 app:singleSelection="true">
 
@@ -123,10 +122,8 @@
                     android:text="Mas visitados"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
                     app:cornerRadius="14dp"
-                    app:backgroundTint="@color/orange"/>
+                    app:backgroundTint="@color/orange" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_cercanos"
@@ -137,9 +134,7 @@
                     android:textColor="@color/white"
                     app:cornerRadius="14dp"
                     android:textSize="10sp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    app:backgroundTint="@color/orange"/>
+                    app:backgroundTint="@color/orange" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_recientes"
@@ -150,22 +145,20 @@
                     android:text="Recientes"
                     android:textColor="@color/white"
                     android:textSize="10sp"
-                    android:layout_marginStart="5dp"
-                    android:layout_marginEnd="5dp"
-                    app:backgroundTint="@color/orange"/>
+                    app:backgroundTint="@color/orange" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
         </LinearLayout>
 
+        <!-- RecyclerView para mostrar lista de lugares -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_places"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
+            android:layout_height="400dp"
+            android:orientation="vertical"
             android:clickable="true"
             android:focusable="true" />
 
     </LinearLayout>
-
-</FrameLayout>
+</ScrollView>
