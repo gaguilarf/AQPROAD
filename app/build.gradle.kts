@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.techteam.aqproad"
-        minSdk = 25
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -61,5 +61,7 @@ dependencies {
     implementation("com.github.bumptech.glide:glide:4.16.0")
     implementation("com.google.android.material:material:1.12.0")
     implementation("io.coil-kt:coil:2.5.0")
+    implementation (libs.play.services.location.v2101)
+
 
 }

@@ -38,9 +38,17 @@ class MainActivity : AppCompatActivity() {
             true
         }
 
-        // Cargar fragmento inicial
         if (savedInstanceState == null) {
-            loadFragment(HomeFragment())  // Cargar fragmento inicial (Home)
+            loadFragment(HomeFragment())
+        }
+
+        val navigateTo = intent.getStringExtra("navigate_to")
+        if (navigateTo == "MapFragment") {
+            // Navega al fragmento de mapa
+            supportFragmentManager.beginTransaction()
+                .replace(R.id.main_container, MapFragment())
+                .addToBackStack(null)
+                .commit()
         }
     }
 
@@ -49,4 +57,5 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.main_container, fragment)
             .commit()
     }
+
 }
