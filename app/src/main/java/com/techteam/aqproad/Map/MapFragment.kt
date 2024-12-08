@@ -109,15 +109,16 @@ class MapFragment : Fragment() {
 
                 // Verifica si el usuario está cerca de algún sitio turístico
                 sitiosGeo.forEach {
-                    val distance = calcularDistancia(userLocation.latitude,userLocation.longitude, it.first.latitude, it.first.longitude)
-                    Log.d("disxy", "Distancia: $distance")
-                    if (distance <= nearbyDistance) {
-                        // Llama a la función para mostrar la notificación si está cerca de un sitio turístico
-                        sendNotification("¡Estás cerca de un sitio turístico!", it.second)
-                        return@forEach // Sale de la lambda, pero no del bucle for
+                    val distance = calcularDistancia(userLocation.latitude, userLocation.longitude, it.first.latitude, it.first.longitude)
+                    Log.d("distancia", "Distancia al sitio '${it.second}': $distance")
+
+                    // Solo envía la notificación si no se ha notificado antes
+                    if (distance <= nearbyDistance && !notifiedSites.contains(it.second)) {
+                        sendNotification("¡Estás cerca de un sitio turístico!", "${it.second}")
+                        notifiedSites.add(it.second) // Marca el sitio como notificado
                     }
                 }
-                handler.postDelayed(this, 1000)
+                handler.postDelayed(this, 2000) // Intervalo de 2 segundos
             }
         }
 
