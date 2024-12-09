@@ -21,7 +21,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/back_item"
+                android:src="@raw/mirador_yanahuara"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -356,7 +356,7 @@
             android:text="Se encuentra ubicada entre el Portal de la Municipalidad y el Portal de Flores. Templo erigido por...."
             android:textSize="14sp" />
 
-        <!-- Botón "Leer más" -->
+        <!-- Botón "Leer más"
         <TextView
             android:id="@+id/text_read_more"
             android:layout_width="wrap_content"
@@ -366,7 +366,7 @@
             android:text="Leer más"
             android:textColor="#FF7F50"
             android:textSize="14sp" />
-
+        -->
         <com.techteam.aqproad.Item.LaCompaniaView
             android:id="@+id/laCompaniaView"
             android:layout_width="match_parent"
