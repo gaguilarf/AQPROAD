@@ -11,6 +11,7 @@ import com.google.firebase.FirebaseApp
 import com.techteam.aqproad.Home.FavoritesFragment
 import com.techteam.aqproad.Home.HomeFragment
 import com.techteam.aqproad.Home.UserFragment
+import com.techteam.aqproad.Item.ItemFragment
 import com.techteam.aqproad.Map.MapFragment
 import com.techteam.aqproad.databinding.ActivityMainBinding
 

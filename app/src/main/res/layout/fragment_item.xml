@@ -41,7 +41,7 @@
 
             <!-- Título del lugar -->
             <TextView
-                android:id="@+id/txt_titulo"
+                android:id="@+id/txtTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -59,6 +59,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
+                android:clickable="true"
                 android:layout_marginTop="322dp"
                 android:layout_marginEnd="16dp"
                 android:text="Mostrar mapa"
@@ -336,7 +337,7 @@
 
         <!-- Texto de las reseñas -->
         <TextView
-            android:id="@+id/text_reviews"
+            android:id="@+id/txtPun"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="42dp"
@@ -346,7 +347,7 @@
 
         <!-- Descripción del lugar -->
         <TextView
-            android:id="@+id/text_description"
+            android:id="@+id/txtDes"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"

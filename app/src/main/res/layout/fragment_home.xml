@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".Home.HomeFragment"
+    android:layout_marginBottom="80dp"
     android:fillViewport="true">
 
     <LinearLayout
@@ -25,7 +26,7 @@
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="3"
+                android:layout_weight="4"
                 android:orientation="vertical">
 
                 <TextView
@@ -45,33 +46,49 @@
                 android:layout_width="0dp"
                 android:layout_weight="1"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_launcher_foreground" />
+                android:src="@drawable/ic_user" />
 
         </LinearLayout>
 
         <!-- Barra de búsqueda -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="70dp"
+            android:layout_height="65dp"
+            android:layout_marginTop="10dp"
             android:orientation="horizontal"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp">
+            android:background="@drawable/rounded_border">
 
-            <EditText
+            <com.google.android.material.textfield.TextInputLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_weight="3"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp"
-                android:hint="Buscar Lugares" />
+                android:layout_height="wrap_content"
+                app:boxBackgroundMode="none"
+                android:hint="Buscar Lugares"
+                android:layout_weight="3">
 
-            <ImageButton
-                android:layout_width="0dp"
+                <com.google.android.material.textfield.TextInputEditText
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="3"
+                    android:paddingTop="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/black"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <View
+                android:layout_width="2dp"
                 android:layout_height="match_parent"
-                android:src="@drawable/ic_launcher_foreground"
+                android:paddingBottom="5dp"
+                android:paddingTop="5dp"
+                android:background="@color/gris" />
+
+            <ImageView
+                android:id="@+id/imageView2"
+                android:layout_width="0dp"
                 android:layout_weight="1"
-                android:paddingStart="20dp"
-                android:paddingEnd="20dp" />
+                android:layout_gravity="center"
+                android:layout_height="30dp"
+                android:src="@drawable/option" />
 
         </LinearLayout>
 
@@ -86,7 +103,9 @@
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="1"
+                android:layout_weight="3"
+                android:textSize="20dp"
+                android:textStyle="bold"
                 android:text="Lugares Populares"
                 android:gravity="center_vertical" />
 
@@ -94,15 +113,17 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:layout_marginEnd="10dp"
+                android:textColor="@color/gris"
                 android:text="Ver Todos"
-                android:gravity="center_vertical" />
+                android:gravity="end|center" />
 
         </LinearLayout>
 
         <!-- Grupo de botones toggle -->
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="60dp"
+            android:layout_height="70dp"
             android:orientation="horizontal"
             android:paddingTop="10dp"
             android:paddingBottom="10dp">
@@ -112,40 +133,35 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:singleSelection="true">
+                app:singleSelection="true"
+                app:checkedButton="@+id/button_mas_visitados"> <!-- Botón seleccionado por defecto -->
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_mas_visitados"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Mas visitados"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
+                    android:text="@string/mas_vistos"
                     app:cornerRadius="14dp"
-                    app:backgroundTint="@color/orange" />
+                    app:backgroundTint="@color/orange" /> <!-- Fondo cuando seleccionado -->
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_cercanos"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Cercanos"
-                    android:textColor="@color/white"
+                    android:text="@string/cercanos"
                     app:cornerRadius="14dp"
-                    android:textSize="10sp"
-                    app:backgroundTint="@color/orange" />
+                    app:backgroundTint="@color/gris" /> <!-- Fondo predeterminado -->
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/button_recientes"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    app:cornerRadius="14dp"
                     android:text="Recientes"
-                    android:textColor="@color/white"
-                    android:textSize="10sp"
-                    app:backgroundTint="@color/orange" />
+                    app:cornerRadius="14dp"
+                    app:backgroundTint="@color/gris" /> <!-- Fondo predeterminado -->
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 

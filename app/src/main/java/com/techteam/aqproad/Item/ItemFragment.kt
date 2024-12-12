@@ -16,10 +16,12 @@ import android.view.ViewGroup
 import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -37,6 +39,7 @@ import androidx.lifecycle.Observer
 import com.techteam.aqproad.AudioService.AudioService
 import com.techteam.aqproad.Home.Comentario
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
+import com.techteam.aqproad.Map.MapFragment
 import java.util.concurrent.TimeUnit
 
 class ItemFragment : Fragment() {
@@ -82,7 +85,6 @@ class ItemFragment : Fragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        buildingID = arguments?.getInt(ARG_BUILDING_ID)?:0//recupera el id de la edificacion pasada
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         ratingManagerDB = RatingManagerDB()
@@ -93,25 +95,43 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
-        setupUI(view)
+        val title = arguments?.getString("title") ?: ""
+        val description = arguments?.getString("description") ?: ""
+        val img = arguments?.getInt("img") ?: 0
+        val btnBack = view.findViewById<ImageButton>(R.id.btn_back)
+        val showMap = view.findViewById<TextView>(R.id.text_show_map)
+
+        showMap.setOnClickListener{
+            val mapFragment = MapFragment()
+
+            // Realizar la transacción del fragmento
+            val fragmentManager = (context as AppCompatActivity).supportFragmentManager
+            fragmentManager.beginTransaction()
+                .replace(R.id.main_container, mapFragment)
+                .addToBackStack(null)
+                .commit()
+        }
+        btnBack.setOnClickListener {
+            requireActivity().supportFragmentManager.popBackStack()
+        }
+        setupUI(view, title, description,img)
         setupObservers()
         return view
     }
 
-    private fun setupUI(view: View) {
+    private fun setupUI(view: View, title: String, description: String, img: Int) {
         //configurar RecyclerView del carrusel
         carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
-        setupCarouselRecyclerView()
 
         //configurar RecyclerView de comentarios
         recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
         recyView_comentarios.layoutManager = LinearLayoutManager(requireContext())
 
         // EditText para nuevo comentario
-        editTextTextMultiLine = view.findViewById<EditText>(R.id.editTextTextMultiLine)  // EditText para comentarios
+        editTextTextMultiLine = view.findViewById(R.id.editTextTextMultiLine)  // EditText para comentarios
 
         // RatingBar y lógica asociada
-        ratingPuntajeTotal = view.findViewById<TextView>(R.id.text_reviews)
+        ratingPuntajeTotal = view.findViewById(R.id.txtPun)
         ratingBar = view.findViewById(R.id.ratingCalif)
         buildingID?.let {
             ratingManagerDB.getActualRatingBuild(it) { message, pt ->
@@ -157,12 +177,35 @@ class ItemFragment : Fragment() {
         })
         setupRatingBar()
 
-        val btnSendComment: Button = view.findViewById<Button>(R.id.button_send_comment)
+        val btnSendComment: Button = view.findViewById(R.id.button_send_comment)
         btnSendComment.setOnClickListener{handleSendComment()}
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         btnExpand.setOnClickListener{ openCroquisFragment()}
 
+        // Actualizar los TextView con los datos recibidos
+        view.findViewById<TextView>(R.id.txtTitle).text = title
+        view.findViewById<TextView>(R.id.txtDes).text = description
+
+        val imageResource = getImageResourceForId(img)
+        view.findViewById<ImageView>(R.id.img_main).setImageResource(imageResource)
+    }
+
+    private fun getImageResourceForId(sitId: Int): Int {
+        return when (sitId) {
+            1 -> R.raw.museo_santuarios_andinos
+            2 -> R.raw.plaza_armas_arequipa
+            3 -> R.raw.museo_arte_virreinal
+            4 -> R.raw.plaza_san_francisco
+            5 -> R.raw.parque_libertad_expresion
+            6 -> R.raw.iglesia
+            7 -> R.raw.casona_santa_catalina
+            8 -> R.raw.teatro_municipal
+            9 -> R.raw.mirador_yanahuara
+            10 -> R.raw.monasterio_santa_catalina
+            // Agrega más condiciones si es necesario
+            else -> R.raw.museo_santuarios_andinos // Imagen predeterminada si no coincide
+        }
     }
 
     private fun setupObservers() {
@@ -173,18 +216,6 @@ class ItemFragment : Fragment() {
             recyView_comentarios.adapter = adapter_comentarios
         })
         viewModel_comentarios.loadComentarios()
-    }
-
-    private fun setupCarouselRecyclerView() {
-        showToast("Este es el id del sitio pasado $buildingID")
-        val images = getImages()
-        carouselRecyclerView.adapter = CarouselAdapter(images)
-    }
-
-    private fun getImages() : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
-        return listOf(
-            "https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg",
-            "https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
     }
 
     private fun setupRatingBar() { //falta obtener el rating de la edificacion respectiva

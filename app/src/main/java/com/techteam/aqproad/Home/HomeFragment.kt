@@ -7,8 +7,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.toObject
@@ -20,17 +23,18 @@ class HomeFragment : Fragment() {
 
     private lateinit var recyclerView: RecyclerView
     private lateinit var edificaciones: MutableList<Edificacion>
+    private lateinit var rootView: View
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_home, container, false)
+    ): View {
+        rootView = inflater.inflate(R.layout.fragment_home, container, false)
 
         val txtUserName = rootView.findViewById<TextView>(R.id.txtHomeUsername)
         val usuarioActual = FirebaseAuth.getInstance().currentUser
         val userName = usuarioActual?.displayName ?: "Usuario"
-        txtUserName.text = "Hola, ${userName.toString()}!"
+        txtUserName.text = "Hola, $userName!"
 
         recyclerView = rootView.findViewById(R.id.list_places)
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -43,7 +47,7 @@ class HomeFragment : Fragment() {
         }
 
         recyclerView.adapter = adapter
-
+        setupButtonToggle()
         return rootView
     }
 
@@ -75,6 +79,40 @@ class HomeFragment : Fragment() {
 
         return edificacionesList
     }
+
+    fun setupButtonToggle() {
+        val toggleGroup = rootView.findViewById<MaterialButtonToggleGroup>(R.id.button_toggle_group)
+        val buttonMasVisitados = rootView.findViewById<MaterialButton>(R.id.button_mas_visitados)
+        val buttonCercanos = rootView.findViewById<MaterialButton>(R.id.button_cercanos)
+        val buttonRecientes = rootView.findViewById<MaterialButton>(R.id.button_recientes)
+
+        // Agregar listener para el cambio de estado de los botones
+        toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
+            if (isChecked) {
+                when (checkedId) {
+                    R.id.button_mas_visitados -> {
+                        buttonMasVisitados.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
+                        buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                        buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                    }
+                    R.id.button_cercanos -> {
+                        buttonMasVisitados.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                        buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
+                        buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                    }
+                    R.id.button_recientes -> {
+                        buttonMasVisitados.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                        buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
+                        buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
+                    }
+                }
+            }
+        }
+
+        // Establecer el primer botón como seleccionado por defecto
+        toggleGroup.check(R.id.button_mas_visitados)
+    }
+
 }
 
 
