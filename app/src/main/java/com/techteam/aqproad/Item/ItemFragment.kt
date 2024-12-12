@@ -65,7 +65,6 @@ class ItemFragment : Fragment() {
     private lateinit var tvTotalDuration: TextView
     private val handler = Handler()
 
-
     //private var buildingName: String? = null // nombre de la edificación
     private var buildingID: Int?=null
 
@@ -122,6 +121,7 @@ class ItemFragment : Fragment() {
     private fun setupUI(view: View, title: String, description: String, img: Int) {
         //configurar RecyclerView del carrusel
         carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
+        setupCarouselRecyclerView()
 
         //configurar RecyclerView de comentarios
         recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
@@ -206,6 +206,18 @@ class ItemFragment : Fragment() {
             // Agrega más condiciones si es necesario
             else -> R.raw.museo_santuarios_andinos // Imagen predeterminada si no coincide
         }
+    }
+
+    private fun setupCarouselRecyclerView() {
+        showToast("Este es el id del sitio pasado $buildingID")
+        val images = getImagesGaleria()
+        carouselRecyclerView.adapter = CarouselAdapter(images)
+    }
+
+    private fun getImagesGaleria() : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
+        return listOf(
+            "https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg",
+            "https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
     }
 
     private fun setupObservers() {
