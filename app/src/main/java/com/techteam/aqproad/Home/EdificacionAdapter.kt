@@ -45,6 +45,7 @@ class EdificacionAdapter(
                     bundle.putString("title", edificaciones[position].sitNom)
                     bundle.putString("description", edificaciones[position].sitDes)
                     bundle.putInt("img", position+1)
+                    bundle.putString("imgUrl", edificaciones[position].imgUrl)
                     itemFragment.arguments = bundle
 
                     // Realizar la transacción del fragmento

@@ -97,6 +97,8 @@ class ItemFragment : Fragment() {
         val title = arguments?.getString("title") ?: ""
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
+        val imgString = arguments?.getString("imgUrl") ?: ""
+
         val btnBack = view.findViewById<ImageButton>(R.id.btn_back)
         val showMap = view.findViewById<TextView>(R.id.text_show_map)
 
@@ -113,15 +115,19 @@ class ItemFragment : Fragment() {
         btnBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-        setupUI(view, title, description,img)
+        setupUI(view, title, description,img, imgString)
         setupObservers()
         return view
     }
 
-    private fun setupUI(view: View, title: String, description: String, img: Int) {
+    private fun createListImages(images: String): List<String> {
+        return images.split(",").map { it.trim() }
+    }
+
+    private fun setupUI(view: View, title: String, description: String, img: Int, imgString: String) {
         //configurar RecyclerView del carrusel
         carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
-        setupCarouselRecyclerView()
+        setupCarouselRecyclerView(imgString)
 
         //configurar RecyclerView de comentarios
         recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
@@ -208,16 +214,14 @@ class ItemFragment : Fragment() {
         }
     }
 
-    private fun setupCarouselRecyclerView() {
+    private fun setupCarouselRecyclerView(imgString: String) {
         showToast("Este es el id del sitio pasado $buildingID")
-        val images = getImagesGaleria()
+        val images = getImagesGaleria(imgString)
         carouselRecyclerView.adapter = CarouselAdapter(images)
     }
 
-    private fun getImagesGaleria() : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
-        return listOf(
-            "https://d3cjd3eir1atrn.cloudfront.net/jesusCautivo.jpg",
-            "https://d3cjd3eir1atrn.cloudfront.net/jesusNazareth.jpg")
+    private fun getImagesGaleria(imgString: String) : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
+        return createListImages(imgString)
     }
 
     private fun setupObservers() {

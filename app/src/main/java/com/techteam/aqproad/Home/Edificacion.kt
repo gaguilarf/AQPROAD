@@ -2,7 +2,7 @@ package com.techteam.aqproad.Home
 
 data class Edificacion(
     val sitId: Int,
-    //val imagenUrl: String,
+    val imgUrl: String,
     val sitCooX: Float,
     val sitCooY: Float,
     val sitDes: String,
