@@ -16,10 +16,10 @@ import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
 import com.techteam.aqproad.SitioActivity
 
-class EdificacionAdapter(
+class EdificacionAdapterTwo(
     private val edificaciones: MutableList<Edificacion>,
     private val onLikeClick: (Int) -> Unit // Callback para el clic en el botón "me gusta"
-) : RecyclerView.Adapter<EdificacionAdapter.EdificacionViewHolder>() {
+) : RecyclerView.Adapter<EdificacionAdapterTwo.EdificacionViewHolder>() {
 
     inner class EdificacionViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val titleText: TextView = itemView.findViewById(R.id.txtTitle)
@@ -63,7 +63,7 @@ class EdificacionAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): EdificacionViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_place, parent, false)
+        val view = LayoutInflater.from(parent.context).inflate(R.layout.list_placetwo, parent, false)
         return EdificacionViewHolder(view)
     }
 
@@ -75,9 +75,9 @@ class EdificacionAdapter(
         holder.locationText.text = edificacion.sitNom
         holder.ratingText.text = edificacion.sitPun.toString()
 
-        // Establecer la imagen de fondo según el sitId
         val imageResource = getImageResourceForId(position+1)
         holder.imgBack.setImageResource(imageResource)
+
     }
 
     private fun getImageResourceForId(sitId: Int): Int {

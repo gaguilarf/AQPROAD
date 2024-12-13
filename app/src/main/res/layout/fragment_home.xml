@@ -129,7 +129,7 @@
             android:paddingBottom="10dp">
 
             <com.google.android.material.button.MaterialButtonToggleGroup
-                android:id="@+id/button_toggle_group"
+                android:id="@+id/btnToggleGroup"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
@@ -137,7 +137,7 @@
                 app:checkedButton="@+id/button_mas_visitados"> <!-- Botón seleccionado por defecto -->
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_mas_visitados"
+                    android:id="@+id/btnMasVisitados"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -155,11 +155,11 @@
                     app:backgroundTint="@color/gris" /> <!-- Fondo predeterminado -->
 
                 <com.google.android.material.button.MaterialButton
-                    android:id="@+id/button_recientes"
+                    android:id="@+id/btnListar"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Recientes"
+                    android:text="@string/listar"
                     app:cornerRadius="14dp"
                     app:backgroundTint="@color/gris" /> <!-- Fondo predeterminado -->
 
@@ -167,11 +167,10 @@
 
         </LinearLayout>
 
-        <!-- RecyclerView para mostrar lista de lugares -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/list_places"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
+            android:layout_height="500dp"
             android:orientation="vertical"
             android:clickable="true"
             android:focusable="true" />

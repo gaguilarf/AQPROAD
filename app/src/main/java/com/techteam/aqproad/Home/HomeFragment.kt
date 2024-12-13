@@ -24,6 +24,7 @@ class HomeFragment : Fragment() {
     private lateinit var recyclerView: RecyclerView
     private lateinit var edificaciones: MutableList<Edificacion>
     private lateinit var rootView: View
+    private lateinit var btnListar: MaterialButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,15 +36,35 @@ class HomeFragment : Fragment() {
         val usuarioActual = FirebaseAuth.getInstance().currentUser
         val userName = usuarioActual?.displayName ?: "Usuario"
         txtUserName.text = "Hola, $userName!"
-
+        btnListar = rootView.findViewById(R.id.btnListar)
+        val btnMasVisitados = rootView.findViewById<MaterialButton>(R.id.btnMasVisitados)
         recyclerView = rootView.findViewById(R.id.list_places)
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
         edificaciones = getEdificaciones()
 
-        val adapter = EdificacionAdapter(edificaciones) { position ->
-            val edificacion = edificaciones[position]
-            //edificacion.liked = !edificacion.liked
+        val adapter = EdificacionAdapter(edificaciones) {
+        }
+
+        val adapter2 = EdificacionAdapterTwo(edificaciones) {
+        }
+
+        btnListar.setOnClickListener {
+            recyclerView.adapter = adapter2
+            recyclerView.layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.VERTICAL,
+                false
+            )
+        }
+
+        btnMasVisitados.setOnClickListener {
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
         }
 
         recyclerView.adapter = adapter
@@ -82,16 +103,16 @@ class HomeFragment : Fragment() {
     }
 
     fun setupButtonToggle() {
-        val toggleGroup = rootView.findViewById<MaterialButtonToggleGroup>(R.id.button_toggle_group)
-        val buttonMasVisitados = rootView.findViewById<MaterialButton>(R.id.button_mas_visitados)
+        val toggleGroup = rootView.findViewById<MaterialButtonToggleGroup>(R.id.btnToggleGroup)
+        val buttonMasVisitados = rootView.findViewById<MaterialButton>(R.id.btnMasVisitados)
         val buttonCercanos = rootView.findViewById<MaterialButton>(R.id.button_cercanos)
-        val buttonRecientes = rootView.findViewById<MaterialButton>(R.id.button_recientes)
+        val buttonRecientes = rootView.findViewById<MaterialButton>(R.id.btnListar)
 
         // Agregar listener para el cambio de estado de los botones
         toggleGroup.addOnButtonCheckedListener { group, checkedId, isChecked ->
             if (isChecked) {
                 when (checkedId) {
-                    R.id.button_mas_visitados -> {
+                    R.id.btnMasVisitados -> {
                         buttonMasVisitados.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
                         buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
                         buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
@@ -101,7 +122,7 @@ class HomeFragment : Fragment() {
                         buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
                         buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
                     }
-                    R.id.button_recientes -> {
+                    R.id.btnListar -> {
                         buttonMasVisitados.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
                         buttonCercanos.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.gris))
                         buttonRecientes.setBackgroundColor(ContextCompat.getColor(rootView.context, R.color.orange))
@@ -111,7 +132,7 @@ class HomeFragment : Fragment() {
         }
 
         // Establecer el primer botón como seleccionado por defecto
-        toggleGroup.check(R.id.button_mas_visitados)
+        toggleGroup.check(R.id.btnMasVisitados)
     }
 
 }
