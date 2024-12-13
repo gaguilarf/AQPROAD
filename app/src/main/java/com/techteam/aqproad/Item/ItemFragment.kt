@@ -10,6 +10,7 @@ import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.os.IBinder
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -40,6 +41,9 @@ import com.techteam.aqproad.AudioService.AudioService
 import com.techteam.aqproad.Home.Comentario
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 class ItemFragment : Fragment() {
@@ -116,7 +120,7 @@ class ItemFragment : Fragment() {
             requireActivity().supportFragmentManager.popBackStack()
         }
         setupUI(view, title, description,img, imgString)
-        setupObservers()
+        setupObservers(img)
         return view
     }
 
@@ -184,7 +188,7 @@ class ItemFragment : Fragment() {
         setupRatingBar()
 
         val btnSendComment: Button = view.findViewById(R.id.button_send_comment)
-        btnSendComment.setOnClickListener{handleSendComment()}
+        btnSendComment.setOnClickListener{handleSendComment(img)}
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
         btnExpand.setOnClickListener{ openCroquisFragment()}
@@ -223,15 +227,82 @@ class ItemFragment : Fragment() {
     private fun getImagesGaleria(imgString: String) : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
         return createListImages(imgString)
     }
+//
+//    private fun setupObservers(img: Int) {
+//        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
+//        viewModel_comentarios = ComentarioViewModel(repository)
+//        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+//            adapter_comentarios = ComentarioAdapter(comentarios)
+//            recyView_comentarios.adapter = adapter_comentarios
+//        })
+//        viewModel_comentarios.loadComentarios(img)
+//    }
 
-    private fun setupObservers() {
-        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
+    /*
+    private fun setupObservers(img: Int) {
+        val repository = ComentarioRepository()
         viewModel_comentarios = ComentarioViewModel(repository)
+
+        // Inicializa el adaptador una vez
+        adapter_comentarios = ComentarioAdapter(listOf())
+        recyView_comentarios.adapter = adapter_comentarios
+
         viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-            adapter_comentarios = ComentarioAdapter(comentarios)
-            recyView_comentarios.adapter = adapter_comentarios
+            adapter_comentarios.updateData(comentarios) // Método para actualizar la lista
         })
-        viewModel_comentarios.loadComentarios()
+
+        viewModel_comentarios.loadComentarios(img)
+    }
+     */
+/*
+    private fun setupObservers(img: Int) {
+        val repository = ComentarioRepository()
+        viewModel_comentarios = ComentarioViewModel(repository)
+
+        // Inicializa el adaptador una vez
+        adapter_comentarios = ComentarioAdapter(listOf())
+        recyView_comentarios.adapter = adapter_comentarios
+
+        viewModel_comentarios.loadComentarios(img)
+        Log.d("ForeachItemFragment", "COMENTARIOS: " + viewModel_comentarios.comentarios)
+
+        // Observa los cambios en los comentarios
+        /*viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+            adapter_comentarios.updateData(comentarios)
+        })*/
+
+        Log.d("ForeachItemFragment", "Test setupObservers")
+
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+
+            Log.d("ForeachItemFragment", "COMENTARIOS COUNT: " + comentarios.size)
+            comentarios.forEach{ a ->
+                Log.d("ForeachItemFragment", a.autor + ": " + a.contenido)
+            }
+            if (!::adapter_comentarios.isInitialized) {
+                adapter_comentarios = ComentarioAdapter(comentarios)
+                recyView_comentarios.adapter = adapter_comentarios
+            } else {
+                adapter_comentarios.updateData(comentarios)
+            }
+        })
+    }*/
+
+    private fun setupObservers(sitId: Int) {
+        val repository = ComentarioRepository()
+        viewModel_comentarios = ComentarioViewModel(repository)
+
+        // Inicializa el adaptador con una lista vacía
+        adapter_comentarios = ComentarioAdapter(listOf())
+        recyView_comentarios.adapter = adapter_comentarios
+
+        // Observa los datos y actualiza el adaptador
+        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
+            adapter_comentarios.updateData(comentarios) // Actualiza el adaptador con los datos
+        })
+
+        // Carga los comentarios
+        viewModel_comentarios.loadComentarios(sitId)
     }
 
     private fun setupRatingBar() { //falta obtener el rating de la edificacion respectiva
@@ -262,19 +333,17 @@ class ItemFragment : Fragment() {
         }
     }
 
-    private fun handleSendComment() { //es para agregar comentarios, falta enviarlo a la base de datos
+    private fun handleSendComment(sitId: Int) { //es para agregar comentarios, falta enviarlo a la base de datos
         val commentText = editTextTextMultiLine.text.toString().trim()
         if (commentText.isNotEmpty()) {
             val usuarioActual = FirebaseAuth.getInstance().currentUser
             val userName = usuarioActual?.displayName ?: "Usuario"
-            val newComment = Comentario(
-                id = (viewModel_comentarios.comentarios.value?.size ?: 0) + 1,  // Generar un id secuencial para el comentario
-                autor = userName.toString(),
-                contenido = commentText
-            )
 
-            // Agregar el nuevo comentario a la lista
-            viewModel_comentarios.addComentario(newComment)
+            val comentarioTexto = commentText
+            val usuarioNombre = userName // Puedes obtenerlo del contexto o de un campo
+            val fechaActual = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+
+            viewModel_comentarios.addComentario(sitId, usuarioNombre, comentarioTexto, fechaActual)
 
             // Limpiar el campo de texto después de enviar el comentario
             editTextTextMultiLine.text.clear()

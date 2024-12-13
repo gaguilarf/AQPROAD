@@ -2,12 +2,14 @@ package com.techteam.aqproad.Home
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.PendingIntentCompat.getActivity
 import androidx.recyclerview.widget.RecyclerView
@@ -39,6 +41,7 @@ class EdificacionAdapterTwo(
 
             itemView.setOnClickListener {
                 val position = adapterPosition
+                Log.d("qwerty", "ID SITIO: ${position}")
                 if (position != RecyclerView.NO_POSITION) {
                     val itemFragment = ItemFragment()
 
