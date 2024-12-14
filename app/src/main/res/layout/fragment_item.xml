@@ -8,7 +8,7 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <!-- RatingBar para las estrellas -->
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -20,6 +20,7 @@
                 android:id="@+id/img_main"
                 android:layout_width="match_parent"
                 android:layout_height="300dp"
+                android:contentDescription="@string/imagen_principal"
                 android:scaleType="centerCrop"
                 android:src="@drawable/el_mirador_yanahuara"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -62,7 +63,7 @@
                 android:clickable="true"
                 android:layout_marginTop="322dp"
                 android:layout_marginEnd="16dp"
-                android:text="Mostrar mapa"
+                android:text="@string/ir"
                 android:textColor="#FF7F50"
                 android:textSize="14sp"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -74,7 +75,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="445dp"
-                android:text="Croquis"
+                android:text="@string/croquis"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"

@@ -16,6 +16,9 @@
     <string name="cercanos">Cercanos</string>
     <string name="Ultimos">Ultimos</string>
     <string name="listar">Listar</string>
+    <string name="croquis">Croquis</string>
+    <string name="ir">Ir</string>
+    <string name="imagen_principal">Imagen principal</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
