@@ -42,9 +42,10 @@
 
             <!-- Imagen de usuario o icono -->
             <ImageView
-                android:id="@+id/imageView"
+                android:id="@+id/imgUser"
                 android:layout_width="0dp"
                 android:layout_weight="1"
+                android:clickable="true"
                 android:layout_height="match_parent"
                 android:src="@drawable/ic_user" />
 

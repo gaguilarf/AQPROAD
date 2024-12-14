@@ -14,7 +14,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.techteam.aqproad.Item.ItemFragment
 import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
-import com.techteam.aqproad.SitioActivity
 
 class EdificacionAdapter(
     private val edificaciones: MutableList<Edificacion>,

@@ -18,14 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.AQPROAD"
         tools:targetApi="31">
-        <activity
-            android:name=".SitioActivity"
-            android:exported="false" />
-        <activity
-            android:name=".Map.MapActivity"
-            android:exported="true">
 
-        </activity>
         <activity
             android:name=".Login.LoginActivity"
             android:exported="true">

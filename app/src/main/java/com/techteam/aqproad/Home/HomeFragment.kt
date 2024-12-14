@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -27,6 +28,7 @@ class HomeFragment : Fragment() {
     private lateinit var btnListar: MaterialButton
     private lateinit var btnMasVisitados: MaterialButton
     private lateinit var btnCercanos: MaterialButton
+    private lateinit var imgUser: ImageView
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -42,8 +44,16 @@ class HomeFragment : Fragment() {
         btnMasVisitados = rootView.findViewById(R.id.btnMasVisitados)
         btnCercanos = rootView.findViewById(R.id.button_cercanos)
         recyclerView = rootView.findViewById(R.id.list_places)
-        recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        imgUser = rootView.findViewById(R.id.imgUser)
 
+        imgUser.setOnClickListener {
+            val userFragment = UserFragment()
+            val transaction = requireActivity().supportFragmentManager.beginTransaction()
+            transaction.replace(R.id.main_container, userFragment)
+            transaction.addToBackStack(null)
+            transaction.commit()
+        }
+        recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         edificaciones = getEdificaciones()
 
         val adapter = EdificacionAdapter(edificaciones) {

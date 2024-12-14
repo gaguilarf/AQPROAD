@@ -53,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="25dp"
-                android:text="Iglesia de la compañia"
+                android:text="@string/titulo_sitio"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
@@ -69,9 +69,9 @@
                 android:layout_marginTop="322dp"
                 android:layout_marginEnd="16dp"
                 android:clickable="true"
-                android:text="Mostrar mapa"
+                android:text="@string/ir"
                 android:textColor="#FF7F50"
-                android:textSize="14sp"
+                android:textSize="16sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

@@ -1,19 +1,16 @@
 package com.techteam.aqproad
 
+import android.content.Context
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.FirebaseApp
 import com.techteam.aqproad.Home.FavoritesFragment
 import com.techteam.aqproad.Home.HomeFragment
 import com.techteam.aqproad.Home.UserFragment
-import com.techteam.aqproad.Item.ItemFragment
 import com.techteam.aqproad.Map.MapFragment
 import com.techteam.aqproad.databinding.ActivityMainBinding
+import java.util.Locale
 
 class MainActivity : AppCompatActivity() {
 
@@ -51,12 +48,26 @@ class MainActivity : AppCompatActivity() {
                 .addToBackStack(null)
                 .commit()
         }
+        setLocale(this, "es")
     }
 
     private fun loadFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(R.id.main_container, fragment)
             .commit()
+    }
+
+    private fun setLocale(context: Context, languageCode: String) {
+        val locale = Locale(languageCode)
+        Locale.setDefault(locale)
+
+        val resources = context.resources
+        val config = resources.configuration
+        config.setLocale(locale)
+        config.setLayoutDirection(locale)
+
+        context.createConfigurationContext(config)
+        resources.updateConfiguration(config, resources.displayMetrics)
     }
 
 }
