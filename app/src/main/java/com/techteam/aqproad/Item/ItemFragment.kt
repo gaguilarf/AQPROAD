@@ -124,9 +124,12 @@ class ItemFragment : Fragment() {
         return view
     }
 
-    private fun createListImages(images: String): List<String> {
-        return images.split(",").map { it.trim() }
+    private val PREFIJO = "https://raw.githubusercontent.com/rvelizs/imagenesAQPROAD/refs/heads/main/"
+
+    private fun createListImages(ids: String): List<String> {
+        return ids.split(",").map { "$PREFIJO${it.trim()}" }
     }
+
 
     private fun setupUI(view: View, title: String, description: String, img: Int, imgString: String) {
         //configurar RecyclerView del carrusel
