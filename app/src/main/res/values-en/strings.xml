@@ -1,0 +1,27 @@
+<resources>
+    <string name="app_name">AQP ROAD</string>
+    <string name="enter_your_username">Enter your username</string>
+    <string name="username">Username</string>
+    <string name="password">Password</string>
+    <string name="enter_your_password">Enter your password</string>
+    <string name="login">Login</string>
+    <string name="forgot_password">Forgot your password?</string>
+    <string name="don_t_have_an_account_yet_register">New to AQP ROAD? Register</string>
+    <string name="recordarme_en_este_dispositivo">Remember me on this device</string>
+    <string name="back_arrow">back arrow</string>
+    <string name="molinos_de_sabandia">Molinos de Sabandia</string>
+    <string name="vamos_all">Let’s go!</string>
+    <string name="back_button">Back button</string>
+    <string name="mas_vistos">most viewed</string>
+    <string name="cercanos">Nearby</string>
+    <string name="Ultimos">Latest</string>
+    <string name="listar">List</string>
+    <string name="ir">Ir></string>
+    <string name="detalles_cuenta">Account details</string>
+    <string name="titulo_sitio">Site Title</string>
+    <string name="correo">Mail:</string>
+    <string name="correo2">Mail</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="usuario">User:</string>
+</resources>
