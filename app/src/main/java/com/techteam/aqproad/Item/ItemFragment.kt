@@ -198,7 +198,7 @@ class ItemFragment : Fragment() {
         view.findViewById<TextView>(R.id.txtDes).text = description
 
         val imageResource = getImageResourceForId(img)
-        view.findViewById<ImageView>(R.id.img_main).setImageResource(imageResource)
+        //view.findViewById<ImageView>(R.id.img_main).setImageResource(imageResource)
     }
 
     private fun getImageResourceForId(sitId: Int): Int {

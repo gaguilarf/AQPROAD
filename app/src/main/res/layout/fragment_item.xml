@@ -8,36 +8,43 @@
 
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="wrap_content">
 
         <!-- RatingBar para las estrellas -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="1959dp">
+            android:layout_height="wrap_content">
 
             <!-- Imagen principal -->
-            <ImageView
-                android:id="@+id/img_main"
-                android:layout_width="match_parent"
-                android:layout_height="300dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/el_mirador_yanahuara"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
-            <!-- Flecha para volver -->
-            <ImageButton
-                android:id="@+id/btn_back"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:background="@drawable/selector"
-                android:contentDescription="@string/back_button"
-                android:src="@drawable/arrow_back"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+            <FrameLayout
+                android:id="@+id/frameLayout2"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <!-- RecyclerView para el carrusel -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerCarousel"
+                    android:layout_width="match_parent"
+                    android:layout_height="290dp"
+                    android:clipChildren="false"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager" />
+
+                <!-- Flecha para volver -->
+                <ImageButton
+                    android:id="@+id/btn_back"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_gravity="start|top"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:background="@drawable/selector"
+                    android:contentDescription="@string/back_button"
+                    android:src="@drawable/arrow_back" />
+
+            </FrameLayout>
 
             <!-- Título del lugar -->
             <TextView
@@ -45,12 +52,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="315dp"
+                android:layout_marginTop="25dp"
                 android:text="Iglesia de la compañia"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/frameLayout2" />
 
             <!-- Texto "Mostrar mapa" -->
 
@@ -59,9 +66,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
-                android:clickable="true"
                 android:layout_marginTop="322dp"
                 android:layout_marginEnd="16dp"
+                android:clickable="true"
                 android:text="Mostrar mapa"
                 android:textColor="#FF7F50"
                 android:textSize="14sp"
@@ -73,23 +80,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="445dp"
+                android:layout_marginTop="25dp"
                 android:text="Croquis"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/audioLayout" />
 
             <ImageButton
                 android:id="@+id/btn_expand"
                 android:layout_width="32dp"
                 android:layout_height="32dp"
-                android:layout_marginTop="443dp"
                 android:layout_marginEnd="16dp"
+                android:layout_marginBottom="15dp"
                 android:background="@drawable/icon_expand"
                 android:contentDescription="@string/back_button"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintBottom_toTopOf="@+id/cardView2"
+                app:layout_constraintEnd_toEndOf="parent" />
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cardView2"
@@ -107,7 +114,7 @@
                 <ImageView
                     android:id="@+id/img_plano"
                     android:layout_width="match_parent"
-                    android:layout_height="180dp"
+                    android:layout_height="204dp"
                     android:layout_gravity="bottom|center"
                     android:scaleType="centerCrop"
                     android:src="@drawable/selector_map" />
@@ -118,13 +125,13 @@
                 android:id="@+id/text_dalecalificacion"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="30dp"
                 android:maxLines="3"
                 android:text="Dale una calificación a este lugar"
                 android:textAlignment="center"
                 android:textSize="14sp"
-                app:layout_constraintTop_toBottomOf="@+id/audioLayout"
-                tools:layout_editor_absoluteX="-32dp" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView2"
+                tools:layout_editor_absoluteX="0dp" />
 
             <RatingBar
                 android:id="@+id/ratingCalif"
@@ -200,32 +207,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/editTextTextMultiLine" />
 
-            <TextView
-                android:id="@+id/textView7"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
-                android:text="Galería"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView2" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerCarousel"
-                android:layout_width="match_parent"
-                android:layout_height="280dp"
-                android:layout_marginTop="20dp"
-                android:clipChildren="false"
-                android:clipToPadding="false"
-                android:orientation="horizontal"
-                android:paddingStart="16dp"
-                android:paddingEnd="16dp"
-                app:layoutManager="com.google.android.material.carousel.CarouselLayoutManager"
-                app:layout_constraintTop_toBottomOf="@+id/textView7"
-                tools:layout_editor_absoluteX="0dp" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyView_comentarios"
                 android:layout_width="0dp"
@@ -242,12 +223,12 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="100dp"
                 android:text="Audio Descripción"
                 android:textSize="24sp"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/recyclerCarousel" />
+                app:layout_constraintTop_toBottomOf="@+id/txtTitle" />
 
             <LinearLayout
                 android:id="@+id/audioLayout"
