@@ -25,6 +25,8 @@ class HomeFragment : Fragment() {
     private lateinit var edificaciones: MutableList<Edificacion>
     private lateinit var rootView: View
     private lateinit var btnListar: MaterialButton
+    private lateinit var btnMasVisitados: MaterialButton
+    private lateinit var btnCercanos: MaterialButton
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -37,7 +39,8 @@ class HomeFragment : Fragment() {
         val userName = usuarioActual?.displayName ?: "Usuario"
         txtUserName.text = "Hola, $userName!"
         btnListar = rootView.findViewById(R.id.btnListar)
-        val btnMasVisitados = rootView.findViewById<MaterialButton>(R.id.btnMasVisitados)
+        btnMasVisitados = rootView.findViewById(R.id.btnMasVisitados)
+        btnCercanos = rootView.findViewById(R.id.button_cercanos)
         recyclerView = rootView.findViewById(R.id.list_places)
         recyclerView.layoutManager = LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
 
@@ -49,6 +52,15 @@ class HomeFragment : Fragment() {
         val adapter2 = EdificacionAdapterTwo(edificaciones) {
         }
 
+        btnMasVisitados.setOnClickListener {
+            recyclerView.adapter = adapter
+            recyclerView.layoutManager = LinearLayoutManager(
+                requireContext(),
+                LinearLayoutManager.HORIZONTAL,
+                false
+            )
+        }
+
         btnListar.setOnClickListener {
             recyclerView.adapter = adapter2
             recyclerView.layoutManager = LinearLayoutManager(
@@ -58,13 +70,8 @@ class HomeFragment : Fragment() {
             )
         }
 
-        btnMasVisitados.setOnClickListener {
-            recyclerView.adapter = adapter
-            recyclerView.layoutManager = LinearLayoutManager(
-                requireContext(),
-                LinearLayoutManager.HORIZONTAL,
-                false
-            )
+        btnCercanos.setOnClickListener{
+
         }
 
         recyclerView.adapter = adapter

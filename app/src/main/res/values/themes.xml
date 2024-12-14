@@ -3,7 +3,14 @@
     <style name="Base.Theme.AQPROAD" parent="Theme.Material3.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="shapeAppearanceCornerExtraLarge">@style/ShapeAppearance.CustomRounded</item>'
     </style>
 
     <style name="Theme.AQPROAD" parent="Base.Theme.AQPROAD" />
+
+    <style name="ShapeAppearance.CustomRounded" parent="ShapeAppearance.MaterialComponents.LargeComponent">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSize">10dp</item>
+    </style>
+
 </resources>

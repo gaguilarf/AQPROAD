@@ -7,9 +7,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
-import com.bumptech.glide.Glide
 import com.techteam.aqproad.R
-import com.techteam.aqproad.databinding.ElementoCarouselBinding
 
 class CarouselAdapter (private val images: List<String>) :
     RecyclerView.Adapter<CarouselAdapter.CarouselViewHolder>() {
