@@ -6,6 +6,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.core.content.ContextCompat
@@ -13,11 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
+import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.toObject
-import com.techteam.aqproad.Item.ItemFragment
-import com.techteam.aqproad.Login.FragmentLogin
 import com.techteam.aqproad.R
 
 class HomeFragment : Fragment() {
@@ -29,6 +28,8 @@ class HomeFragment : Fragment() {
     private lateinit var btnMasVisitados: MaterialButton
     private lateinit var btnCercanos: MaterialButton
     private lateinit var imgUser: ImageView
+    private lateinit var btnSearch: ImageButton
+    private lateinit var edtWord:TextInputEditText
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -45,6 +46,8 @@ class HomeFragment : Fragment() {
         btnCercanos = rootView.findViewById(R.id.button_cercanos)
         recyclerView = rootView.findViewById(R.id.list_places)
         imgUser = rootView.findViewById(R.id.imgUser)
+        btnSearch = rootView.findViewById(R.id.btnSearch)
+        edtWord = rootView.findViewById(R.id.edtWord)
 
         imgUser.setOnClickListener {
             val userFragment = UserFragment()
@@ -86,6 +89,17 @@ class HomeFragment : Fragment() {
 
         recyclerView.adapter = adapter
         setupButtonToggle()
+
+        btnSearch.setOnClickListener {
+            //filtrar recyclerview con la busqueda de la palabra edtWord comparado con el titulo de la edificacion
+            val word = edtWord.text.toString()
+            val edificacionesFiltradas = edificaciones.filter { it.sitNom.contains(word, ignoreCase = true) }
+            val adapter = EdificacionAdapter(edificacionesFiltradas) {
+            }
+            recyclerView.adapter = adapter
+
+        }
+
         return rootView
     }
 

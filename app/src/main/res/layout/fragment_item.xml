@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:layout_marginBottom="80dp"
     tools:context=".Item.ItemFragment">
 
     <FrameLayout
@@ -338,22 +339,11 @@
             android:text="Se encuentra ubicada entre el Portal de la Municipalidad y el Portal de Flores. Templo erigido por...."
             android:textSize="14sp" />
 
-        <!-- Botón "Leer más"
-        <TextView
-            android:id="@+id/text_read_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginTop="420dp"
-            android:text="Leer más"
-            android:textColor="#FF7F50"
-            android:textSize="14sp" />
-        -->
         <com.techteam.aqproad.Item.LaCompaniaView
             android:id="@+id/laCompaniaView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:visibility="gone" /> <!-- Inicialmente oculto -->
+            android:visibility="gone" />
 
     </FrameLayout>
 </ScrollView>
