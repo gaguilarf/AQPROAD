@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.google.firebase.FirebaseApp
+import com.techteam.aqproad.Home.ChatbotFragment
 import com.techteam.aqproad.Home.FavoritesFragment
 import com.techteam.aqproad.Home.HomeFragment
 import com.techteam.aqproad.Home.UserFragment
@@ -29,7 +30,7 @@ class MainActivity : AppCompatActivity() {
             when (item.itemId) {
                 R.id.home_menu -> loadFragment(HomeFragment())
                 R.id.map_menu -> loadFragment(MapFragment())
-                R.id.favorites_menu -> loadFragment(FavoritesFragment())
+                R.id.chatbot_menu -> loadFragment(ChatbotFragment())
                 R.id.user_menu -> loadFragment(UserFragment())
                 else -> false
             }
@@ -42,7 +43,6 @@ class MainActivity : AppCompatActivity() {
 
         val navigateTo = intent.getStringExtra("navigate_to")
         if (navigateTo == "MapFragment") {
-            // Navega al fragmento de mapa
             supportFragmentManager.beginTransaction()
                 .replace(R.id.main_container, MapFragment())
                 .addToBackStack(null)
