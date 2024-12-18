@@ -25,17 +25,12 @@ class ButtonRegion(
         isAntiAlias = true
     }
 
-    //radio boton
     private val buttonRadio = 11f
-    //mov del texto respecto al centro del circulo
     private val movX = 10.5f
     private val movY = 7f
 
-
     fun draw(canvas: Canvas) {
         canvas.drawCircle(centerX, centerY, buttonRadio, buttonPaint)
-        //val textY = centerY - (buttonText.descent() + buttonText.ascent()) / 2
-        //canvas.drawText("47", centro47.x - movX, centro47.y + movY, buttonText)
         canvas.drawText(text, centerX - movX, centerY + movY, buttonText)
     }
 
