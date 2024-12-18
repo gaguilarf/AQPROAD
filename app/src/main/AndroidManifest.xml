@@ -34,11 +34,10 @@
 
         </activity>
 
-        <service
-            android:name=".AudioService.AudioService"
-            android:exported="false"
+        <service android:name=".AudioService.TextToSpeechService"
+            android:enabled="true"
             android:foregroundServiceType="mediaPlayback"
-            tools:ignore="ForegroundServicePermission" />
+            tools:ignore="ForegroundServicePermission"/>
     </application>
 
 </manifest>

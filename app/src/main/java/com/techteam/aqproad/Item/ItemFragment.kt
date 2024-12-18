@@ -5,6 +5,8 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.speech.tts.TextToSpeech
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -31,6 +33,7 @@ import com.example.recyclerview.ComentarioAdapter
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
+import com.techteam.aqproad.AudioService.TextToSpeechManager
 import com.techteam.aqproad.AudioService.TextToSpeechService
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
@@ -59,6 +62,7 @@ class ItemFragment : Fragment() {
     private lateinit var tvCurrentTime: TextView
     private lateinit var tvTotalDuration: TextView
     private var buildingID: Int?=null
+    private lateinit var textToSpeechManager: TextToSpeechManager
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -86,6 +90,7 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
+        textToSpeechManager = TextToSpeechManager(view.context)
         val title = arguments?.getString("title") ?: ""
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
@@ -209,7 +214,20 @@ class ItemFragment : Fragment() {
     }
 
     private fun startTextToSpeechService(description: String) {
-        val startIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+        textToSpeechManager.initialize { isInitialized ->
+            if (isInitialized) {
+
+                // TTS Listo, puedes comenzar a usar speak() aqui
+                Log.d("TTS", "TTS Inicializado")
+                val textToSpeak = description
+                textToSpeechManager.speak(textToSpeak)
+
+            } else {
+                // Manejar el fallo de inicialización
+                Log.e("TTS", "Fallo la inicializacion")
+            }
+        }
+        /*val startIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
             action = TextToSpeechService.ACTION_START
         }
         requireContext().startService(startIntent)
@@ -217,7 +235,7 @@ class ItemFragment : Fragment() {
             action = TextToSpeechService.ACTION_SPEAK
             putExtra(TextToSpeechService.EXTRA_TEXT, description)
         }
-        requireContext().startService(speakIntent)
+        requireContext().startService(speakIntent)*/
     }
 
 

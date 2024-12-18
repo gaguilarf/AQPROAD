@@ -6,19 +6,23 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
 import android.content.Intent
-import android.os.Build
 import android.os.IBinder
+import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
+import java.util.Locale
 
-class TextToSpeechService : Service() {
+class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
 
-    private lateinit var textToSpeechManager: TextToSpeechManager
+    private lateinit var textToSpeech: TextToSpeech
     private val CHANNEL_ID = "TTS_SERVICE_CHANNEL"
     private val NOTIFICATION_ID = 1
     private var currentText = ""
+    private var isInitialized = false
+
 
     companion object {
         const val ACTION_START = "ACTION_START"
@@ -29,7 +33,7 @@ class TextToSpeechService : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        textToSpeechManager = TextToSpeechManager(applicationContext)
+        textToSpeech = TextToSpeech(this, this)
         createNotificationChannel()
     }
 
@@ -37,14 +41,19 @@ class TextToSpeechService : Service() {
         when (intent?.action) {
             ACTION_START ->{
                 startTtsService()
-                Log.d("TTS", "Servicio TTS iniciado")
+                Log.d("TTSX", "Servicio TTS iniciado")
             }
             ACTION_SPEAK -> {
                 val text = intent.getStringExtra(EXTRA_TEXT) ?: ""
                 if(text.isNotEmpty()){
                     currentText = text
-                    speak(text)
-                    Log.d("TTS", "TTS hablando: $text")
+                    if(isInitialized){
+                        speak(text)
+                        Log.d("TTS", "TTS hablando: $text")
+                    }
+                    else{
+                        Log.e("TTS","TTS no inicializado")
+                    }
                 } else{
                     Log.e("TTS","Texto vacio")
                 }
@@ -59,24 +68,34 @@ class TextToSpeechService : Service() {
     }
 
     private fun startTtsService() {
-        textToSpeechManager.initialize { isInitialized ->
-            if (isInitialized) {
-                startForegroundService()
-                Log.d("TTS","Servicio TTS inicializado correctamente")
-            } else {
-                Log.e("TTS","Error al inicializar el TTS")
-                stopSelf()
-            }
-        }
+        //No initialization logic is needed here, it is handled by onInit
+        //We can log that this service started
+        Log.d("TTS", "Servicio TTS inicializado correctamente")
     }
 
     private fun speak(text: String) {
-        textToSpeechManager.speak(text)
+        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
         startForegroundService()
+        textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+            override fun onStart(utteranceId: String?) {
+                //TODO("Not yet implemented")
+            }
+
+            override fun onDone(utteranceId: String?) {
+                stopForeground(STOP_FOREGROUND_REMOVE)
+            }
+
+            override fun onError(utteranceId: String?) {
+                Log.e("TTS", "Error speaking text: $utteranceId")
+            }
+        })
     }
 
     private fun stopTtsService() {
-        textToSpeechManager.shutdown()
+        textToSpeech.stop()
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.shutdown()
+        }
         stopForeground(STOP_FOREGROUND_REMOVE)
         stopSelf()
     }
@@ -125,10 +144,29 @@ class TextToSpeechService : Service() {
     override fun onDestroy() {
         super.onDestroy()
         Log.d("TTS", "Servicio TTS destruido")
+        if (::textToSpeech.isInitialized) {
+            textToSpeech.shutdown()
+        }
     }
 
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
+    }
+
+    override fun onInit(status: Int) {
+        if (status == TextToSpeech.SUCCESS) {
+            // set language
+            val result = textToSpeech.setLanguage(Locale("es", "ES"))
+
+            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                Log.e("TTS", "Lenguaje no soportado")
+            } else {
+                isInitialized = true
+                Log.d("TTS", "TTS inicializado en Oninit")
+            }
+        } else {
+            Log.e("TTS", "TTS Initialization failed")
+        }
     }
 }

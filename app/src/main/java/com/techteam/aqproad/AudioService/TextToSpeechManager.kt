@@ -3,7 +3,6 @@ package com.techteam.aqproad.AudioService
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.util.Log
-import java.util.Locale
 
 class TextToSpeechManager(private val context: Context) {
 
@@ -11,17 +10,23 @@ class TextToSpeechManager(private val context: Context) {
     private var isInitialized = false
 
     fun initialize(onInit: (Boolean) -> Unit) {
+        /*textToSpeechManager.initialize { isInitialized ->
+            if (isInitialized) {
+
+                // TTS Listo, puedes comenzar a usar speak() aqui
+                Log.d("TTS", "TTS Inicializado")
+                val textToSpeak = description
+                textToSpeechManager.speak(textToSpeak)
+
+            } else {
+                // Manejar el fallo de inicialización
+                Log.e("TTS", "Fallo la inicializacion")
+            }
+        }*/
         textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech?.setLanguage(Locale("es", "ES"))
-
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    Log.e("TTS", "El idioma español no es compatible o falta datos.")
-                    onInit(false)
-                } else {
-                    isInitialized = true
-                    onInit(true)
-                }
+                isInitialized = true
+                onInit(true)
             } else {
                 Log.e("TTS", "Inicialización del TTS fallida.")
                 onInit(false)
