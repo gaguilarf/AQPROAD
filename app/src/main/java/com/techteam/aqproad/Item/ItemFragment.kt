@@ -221,7 +221,6 @@ class ItemFragment : Fragment() {
     }
 
     private fun setupCarouselRecyclerView(imgString: String) {
-        showToast("Este es el id del sitio pasado $buildingID")
         val images = getImagesGaleria(imgString)
         carouselRecyclerView.adapter = CarouselAdapter(images)
     }
@@ -229,66 +228,6 @@ class ItemFragment : Fragment() {
     private fun getImagesGaleria(imgString: String) : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
         return createListImages(imgString)
     }
-//
-//    private fun setupObservers(img: Int) {
-//        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
-//        viewModel_comentarios = ComentarioViewModel(repository)
-//        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-//            adapter_comentarios = ComentarioAdapter(comentarios)
-//            recyView_comentarios.adapter = adapter_comentarios
-//        })
-//        viewModel_comentarios.loadComentarios(img)
-//    }
-
-    /*
-    private fun setupObservers(img: Int) {
-        val repository = ComentarioRepository()
-        viewModel_comentarios = ComentarioViewModel(repository)
-
-        // Inicializa el adaptador una vez
-        adapter_comentarios = ComentarioAdapter(listOf())
-        recyView_comentarios.adapter = adapter_comentarios
-
-        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-            adapter_comentarios.updateData(comentarios) // Método para actualizar la lista
-        })
-
-        viewModel_comentarios.loadComentarios(img)
-    }
-     */
-/*
-    private fun setupObservers(img: Int) {
-        val repository = ComentarioRepository()
-        viewModel_comentarios = ComentarioViewModel(repository)
-
-        // Inicializa el adaptador una vez
-        adapter_comentarios = ComentarioAdapter(listOf())
-        recyView_comentarios.adapter = adapter_comentarios
-
-        viewModel_comentarios.loadComentarios(img)
-        Log.d("ForeachItemFragment", "COMENTARIOS: " + viewModel_comentarios.comentarios)
-
-        // Observa los cambios en los comentarios
-        /*viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-            adapter_comentarios.updateData(comentarios)
-        })*/
-
-        Log.d("ForeachItemFragment", "Test setupObservers")
-
-        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-
-            Log.d("ForeachItemFragment", "COMENTARIOS COUNT: " + comentarios.size)
-            comentarios.forEach{ a ->
-                Log.d("ForeachItemFragment", a.autor + ": " + a.contenido)
-            }
-            if (!::adapter_comentarios.isInitialized) {
-                adapter_comentarios = ComentarioAdapter(comentarios)
-                recyView_comentarios.adapter = adapter_comentarios
-            } else {
-                adapter_comentarios.updateData(comentarios)
-            }
-        })
-    }*/
 
     private fun setupObservers(sitId: Int) {
         val repository = ComentarioRepository()

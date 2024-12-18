@@ -345,11 +345,5 @@
             android:text="Se encuentra ubicada entre el Portal de la Municipalidad y el Portal de Flores. Templo erigido por...."
             android:textSize="14sp" />
 
-        <com.techteam.aqproad.Item.LaCompaniaView
-            android:id="@+id/laCompaniaView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
-
     </FrameLayout>
 </ScrollView>
