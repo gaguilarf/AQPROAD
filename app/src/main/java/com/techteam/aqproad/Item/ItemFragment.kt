@@ -38,6 +38,7 @@ import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
 import com.techteam.aqproad.AudioService.AudioService
+import com.techteam.aqproad.AudioService.TextToSpeechManager
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
 import java.text.SimpleDateFormat
@@ -67,6 +68,7 @@ class ItemFragment : Fragment() {
     private lateinit var tvTotalDuration: TextView
     private val handler = Handler()
     private var buildingID: Int?=null
+    private lateinit var textToSpeechManager: TextToSpeechManager
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -94,6 +96,7 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
+        textToSpeechManager = TextToSpeechManager(view.context)
         val title = arguments?.getString("title") ?: ""
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
@@ -122,6 +125,21 @@ class ItemFragment : Fragment() {
         }
         setupUI(view, title, description,img, imgString)
         setupObservers(img)
+
+        // Inicializar TTS cuando la activity comienza
+        textToSpeechManager.initialize { isInitialized ->
+            if (isInitialized) {
+                // TTS Listo, puedes comenzar a usar speak() aqui
+                Log.d("TTS", "TTS Inicializado")
+                val textToSpeak = "Hola, este es un ejemplo de texto a voz en español utilizando Kotlin."
+                textToSpeechManager.speak(textToSpeak)
+
+            } else {
+                // Manejar el fallo de inicialización
+                Log.e("TTS", "Fallo la inicializacion")
+            }
+        }
+
         return view
     }
 
@@ -398,5 +416,12 @@ class ItemFragment : Fragment() {
         val seconds = TimeUnit.MILLISECONDS.toSeconds(ms.toLong()) % 60
         return String.format("%d:%02d", minutes, seconds)
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Liberar recursos cuando se destruye la actividad
+        textToSpeechManager.shutdown()
+    }
+
 }
 
