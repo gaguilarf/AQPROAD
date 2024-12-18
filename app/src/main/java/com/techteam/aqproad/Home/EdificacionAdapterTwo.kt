@@ -46,6 +46,7 @@ class EdificacionAdapterTwo(
                     bundle.putString("description", edificaciones[position].sitDes)
                     bundle.putInt("img", position+1)
                     bundle.putString("imgUrl", edificaciones[position].imgUrl)
+                    bundle.putBoolean("Croquis", edificaciones[position].sitCro)
                     itemFragment.arguments = bundle
 
                     // Realizar la transacción del fragmento
@@ -73,24 +74,26 @@ class EdificacionAdapterTwo(
         holder.locationText.text = edificacion.sitNom
         holder.ratingText.text = edificacion.sitPun.toString()
 
-        val imageResource = getImageResourceForId(position+1)
+        // Establecer la imagen de fondo según el sitId
+        val imageResource = getImageResourceForTitle(edificacion.sitNom)
         holder.imgBack.setImageResource(imageResource)
 
     }
 
-    private fun getImageResourceForId(sitId: Int): Int {
-        return when (sitId) {
-            1 -> R.raw.museo_santuarios_andinos
-            2 -> R.raw.plaza_armas_arequipa
-            3 -> R.raw.museo_arte_virreinal
-            4 -> R.raw.plaza_san_francisco
-            5 -> R.raw.parque_libertad_expresion
-            6 -> R.raw.iglesia
-            7 -> R.raw.casona_santa_catalina
-            8 -> R.raw.teatro_municipal
-            9 -> R.raw.mirador_yanahuara
-            10 -> R.raw.monasterio_santa_catalina
-            // Agrega más condiciones si es necesario
+    private fun getImageResourceForTitle(title: String): Int {
+        Log.d("revTitulo", "title: $title")
+        return when (title.lowercase()) { // Convertir a minúsculas para evitar problemas de mayúsculas/minúsculas
+            "museo santuarios andinos" -> R.raw.museo_santuarios_andinos
+            "plaza de armas" -> R.raw.plaza_armas_arequipa
+            "museo de arte virreinal" -> R.raw.museo_arte_virreinal
+            "plaza de san francisco" -> R.raw.plaza_san_francisco
+            "parque libertad" -> R.raw.parque_libertad_expresion
+            "iglesia de la compania" -> R.raw.iglesia
+            "casona de santa catalina" -> R.raw.casona_santa_catalina
+            "teatro municipal" -> R.raw.teatro_municipal
+            "mirador de yanahuara" -> R.raw.mirador_yanahuara
+            "monasterio de santa catalina" -> R.raw.monasterio_santa_catalina
+            // Agrega más títulos según sea necesario
             else -> R.raw.museo_santuarios_andinos // Imagen predeterminada si no coincide
         }
     }

@@ -156,7 +156,8 @@ class HomeFragment : Fragment() {
                         sitDes = info["sitDes"] as? String ?: "",
                         sitNom = info["sitNom"] as? String ?: "",
                         sitPun = info["sitPun"] as? Float ?: 0f,
-                        imgUrl = info["sitImgEnl"] as? String ?: ""
+                        imgUrl = info["sitImgEnl"] as? String ?: "",
+                        sitCro = info["sitCro"] as? Boolean ?: false
                     )
                     edificacionesList.add(edificacion)
                 }

@@ -8,4 +8,5 @@ data class Edificacion(
     val sitDes: String,
     var sitNom: String,
     var sitPun: Float,
+    var sitCro:Boolean
 )

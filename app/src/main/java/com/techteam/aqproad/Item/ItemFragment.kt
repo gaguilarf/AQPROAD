@@ -58,7 +58,6 @@ class ItemFragment : Fragment() {
     private lateinit var ratingManagerDB: RatingManagerDB
     private lateinit var ratingPuntajeTotal: TextView
 
-    // para el AudioService
     private var audioService: AudioService? = null
     private var isBound = false
     private lateinit var btnPlayPause: ImageButton
@@ -67,8 +66,6 @@ class ItemFragment : Fragment() {
     private lateinit var tvCurrentTime: TextView
     private lateinit var tvTotalDuration: TextView
     private val handler = Handler()
-
-    //private var buildingName: String? = null // nombre de la edificación
     private var buildingID: Int?=null
 
     companion object {
@@ -101,14 +98,19 @@ class ItemFragment : Fragment() {
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
         val imgString = arguments?.getString("imgUrl") ?: ""
+        val sitCro = arguments?.getBoolean("Croquis") ?: false
+        val imgPlano = view.findViewById<ImageView>(R.id.img_plano)
 
         val btnBack = view.findViewById<ImageButton>(R.id.btn_back)
         val showMap = view.findViewById<TextView>(R.id.text_show_map)
 
+        if(!sitCro){
+            imgPlano.setImageResource(R.drawable.selector_nomap)
+        }
+
         showMap.setOnClickListener{
             val mapFragment = MapFragment()
 
-            // Realizar la transacción del fragmento
             val fragmentManager = (context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
                 .replace(R.id.main_container, mapFragment)
@@ -193,7 +195,12 @@ class ItemFragment : Fragment() {
         btnSendComment.setOnClickListener{handleSendComment(img)}
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
-        btnExpand.setOnClickListener{ openCroquisFragment()}
+        val sitCro = arguments?.getBoolean("Croquis") ?: false
+        btnExpand.setOnClickListener{
+            if(sitCro){
+                openCroquisFragment()
+            }
+        }
 
         // Actualizar los TextView con los datos recibidos
         view.findViewById<TextView>(R.id.txtTitle).text = title
