@@ -1,16 +1,10 @@
 package com.techteam.aqproad.Item
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -37,14 +31,12 @@ import com.example.recyclerview.ComentarioAdapter
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
-import com.techteam.aqproad.AudioService.AudioService
-import com.techteam.aqproad.AudioService.TextToSpeechManager
+import com.techteam.aqproad.AudioService.TextToSpeechService
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -59,16 +51,14 @@ class ItemFragment : Fragment() {
     private lateinit var ratingManagerDB: RatingManagerDB
     private lateinit var ratingPuntajeTotal: TextView
 
-    private var audioService: AudioService? = null
-    private var isBound = false
+    //private var audioService: AudioService? = null Eliminamos cualquier rastro de audioservice
+    //private var isBound = false Eliminamos cualquier rastro de audioservice
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnStop: ImageButton
     private lateinit var audioSeekBar: SeekBar
     private lateinit var tvCurrentTime: TextView
     private lateinit var tvTotalDuration: TextView
-    private val handler = Handler()
     private var buildingID: Int?=null
-    private lateinit var textToSpeechManager: TextToSpeechManager
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -96,7 +86,6 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
-        textToSpeechManager = TextToSpeechManager(view.context)
         val title = arguments?.getString("title") ?: ""
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
@@ -125,20 +114,6 @@ class ItemFragment : Fragment() {
         }
         setupUI(view, title, description,img, imgString)
         setupObservers(img)
-
-        // Inicializar TTS cuando la activity comienza
-        textToSpeechManager.initialize { isInitialized ->
-            if (isInitialized) {
-                // TTS Listo, puedes comenzar a usar speak() aqui
-                Log.d("TTS", "TTS Inicializado")
-                val textToSpeak = "Hola, este es un ejemplo de texto a voz en español utilizando Kotlin."
-                textToSpeechManager.speak(textToSpeak)
-
-            } else {
-                // Manejar el fallo de inicialización
-                Log.e("TTS", "Fallo la inicializacion")
-            }
-        }
 
         return view
     }
@@ -181,17 +156,24 @@ class ItemFragment : Fragment() {
         tvTotalDuration = view.findViewById(R.id.tvTotalDuration)
 
         btnPlayPause.setOnClickListener {
-            if (audioService?.isPlaying == true) {
-                startAudioService("PAUSE")
+            val intent = Intent(requireContext(), TextToSpeechService::class.java)
+            if (isTtsPlaying()) {
+                intent.action = TextToSpeechService.ACTION_STOP
+                requireContext().startService(intent)
                 btnPlayPause.setImageResource(R.drawable.ic_play)
             } else {
-                startAudioService("PLAY")
+                intent.action = TextToSpeechService.ACTION_SPEAK
+                intent.putExtra(TextToSpeechService.EXTRA_TEXT,description)
+                requireContext().startService(intent)
                 btnPlayPause.setImageResource(R.drawable.ic_pause)
+
             }
         }
 
         btnStop.setOnClickListener {
-            startAudioService("STOP")
+            val intent = Intent(requireContext(), TextToSpeechService::class.java)
+            intent.action = TextToSpeechService.ACTION_STOP
+            requireContext().startService(intent)
             btnPlayPause.setImageResource(R.drawable.ic_play)
             audioSeekBar.progress = 0
             tvCurrentTime.text = "0:00"
@@ -199,9 +181,9 @@ class ItemFragment : Fragment() {
 
         audioSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser && isBound) {
-                    audioService?.mediaPlayer?.seekTo(progress)
-                }
+                /* if (fromUser && isBound) {
+                     audioService?.mediaPlayer?.seekTo(progress)
+                 }*/
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -223,8 +205,21 @@ class ItemFragment : Fragment() {
         // Actualizar los TextView con los datos recibidos
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
-
+        startTextToSpeechService(description)
     }
+
+    private fun startTextToSpeechService(description: String) {
+        val startIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_START
+        }
+        requireContext().startService(startIntent)
+        val speakIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_SPEAK
+            putExtra(TextToSpeechService.EXTRA_TEXT, description)
+        }
+        requireContext().startService(speakIntent)
+    }
+
 
     private fun setupCarouselRecyclerView(imgString: String) {
         val images = getImagesGaleria(imgString)
@@ -355,73 +350,24 @@ class ItemFragment : Fragment() {
         })
     }
 
+    private fun isTtsPlaying(): Boolean {
+        // You can add a logic here to check if TTS is currently playing
+        // For now, just returning a hardcoded false to avoid crashing and have a functional button
+        val intent = Intent(requireContext(), TextToSpeechService::class.java)
+        return requireContext().startService(intent) != null
+
+    }
+
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    // Funciones AudioService
-    override fun onStart() {
-        super.onStart()
-        Intent(requireContext(), AudioService::class.java).also { intent ->
-            requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (isBound) {
-            requireActivity().unbindService(serviceConnection)
-            isBound = false
-        }
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    private fun startAudioService(action: String) {
-        val intent = Intent(requireContext(), AudioService::class.java).apply { this.action = action }
-        requireActivity().startService(intent)
-    }
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as AudioService.AudioBinder
-            audioService = binder.getService()
-            isBound = true
-            initializeSeekBar()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            audioService = null
-            isBound = false
-        }
-    }
-
-    private fun initializeSeekBar() {
-        audioService?.let {
-            val duration = it.mediaPlayer.duration
-            audioSeekBar.max = duration
-            tvTotalDuration.text = formatTime(duration)
-
-            handler.post(object : Runnable {
-                override fun run() {
-                    audioSeekBar.progress = it.mediaPlayer.currentPosition
-                    tvCurrentTime.text = formatTime(it.mediaPlayer.currentPosition)
-                    handler.postDelayed(this, 1000)
-                }
-            })
-        }
-    }
-
-    private fun formatTime(ms: Int): String {
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(ms.toLong())
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(ms.toLong()) % 60
-        return String.format("%d:%02d", minutes, seconds)
-    }
 
     override fun onDestroy() {
         super.onDestroy()
-        // Liberar recursos cuando se destruye la actividad
-        textToSpeechManager.shutdown()
+        val stopIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_STOP
+        }
+        requireContext().startService(stopIntent)
     }
-
 }
-

@@ -13,7 +13,8 @@ class TextToSpeechManager(private val context: Context) {
     fun initialize(onInit: (Boolean) -> Unit) {
         textToSpeech = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                val result = textToSpeech?.setLanguage(Locale("es", "ES")) // Español de España
+                val result = textToSpeech?.setLanguage(Locale("es", "ES"))
+
                 if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
                     Log.e("TTS", "El idioma español no es compatible o falta datos.")
                     onInit(false)
@@ -31,7 +32,7 @@ class TextToSpeechManager(private val context: Context) {
     fun speak(text: String) {
         if (isInitialized && textToSpeech != null) {
             textToSpeech?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "")
-        }else{
+        } else {
             Log.e("TTS", "TTS no inicializado o texto no valido.")
         }
     }
