@@ -206,25 +206,6 @@ class ItemFragment : Fragment() {
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
 
-        val imageResource = getImageResourceForId(img)
-        //view.findViewById<ImageView>(R.id.img_main).setImageResource(imageResource)
-    }
-
-    private fun getImageResourceForId(sitId: Int): Int {
-        return when (sitId) {
-            1 -> R.raw.museo_santuarios_andinos
-            2 -> R.raw.plaza_armas_arequipa
-            3 -> R.raw.museo_arte_virreinal
-            4 -> R.raw.plaza_san_francisco
-            5 -> R.raw.parque_libertad_expresion
-            6 -> R.raw.iglesia
-            7 -> R.raw.casona_santa_catalina
-            8 -> R.raw.teatro_municipal
-            9 -> R.raw.mirador_yanahuara
-            10 -> R.raw.monasterio_santa_catalina
-            // Agrega más condiciones si es necesario
-            else -> R.raw.museo_santuarios_andinos // Imagen predeterminada si no coincide
-        }
     }
 
     private fun setupCarouselRecyclerView(imgString: String) {
