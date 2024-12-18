@@ -118,7 +118,13 @@
                     android:layout_height="204dp"
                     android:layout_gravity="bottom|center"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/selector_map" />
+                    android:src="@drawable/selector_map">
+                </ImageView>
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
 
             </androidx.cardview.widget.CardView>
 

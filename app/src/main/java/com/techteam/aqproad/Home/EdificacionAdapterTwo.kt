@@ -1,6 +1,5 @@
 package com.techteam.aqproad.Home
 
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -9,16 +8,13 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.app.PendingIntentCompat.getActivity
 import androidx.recyclerview.widget.RecyclerView
 import com.techteam.aqproad.Item.ItemFragment
-import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
 
 class EdificacionAdapterTwo(
-    private val edificaciones: MutableList<Edificacion>,
+    private val edificaciones: List<Edificacion>,
     private val onLikeClick: (Int) -> Unit // Callback para el clic en el botón "me gusta"
 ) : RecyclerView.Adapter<EdificacionAdapterTwo.EdificacionViewHolder>() {
 

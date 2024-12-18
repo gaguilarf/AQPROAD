@@ -246,7 +246,6 @@ class MapFragment : Fragment() {
         mapView.invalidate() // Actualiza el mapa
     }
 
-
     fun calcularDistancia(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
         val radioTierra = 6371e3 // Radio de la Tierra en metros
         val dLat = Math.toRadians(lat2 - lat1)

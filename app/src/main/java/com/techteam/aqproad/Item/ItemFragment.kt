@@ -38,7 +38,6 @@ import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
 import com.techteam.aqproad.AudioService.AudioService
-import com.techteam.aqproad.Home.Comentario
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
 import java.text.SimpleDateFormat

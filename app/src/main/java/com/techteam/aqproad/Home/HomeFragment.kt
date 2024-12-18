@@ -1,5 +1,8 @@
 package com.techteam.aqproad.Home
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.location.Location
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -9,15 +12,23 @@ import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.button.MaterialButtonToggleGroup
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.techteam.aqproad.R
+import kotlin.math.atan2
+import kotlin.math.cos
+import kotlin.math.pow
+import kotlin.math.sin
+import kotlin.math.sqrt
 
 class HomeFragment : Fragment() {
 
@@ -29,7 +40,10 @@ class HomeFragment : Fragment() {
     private lateinit var btnCercanos: MaterialButton
     private lateinit var imgUser: ImageView
     private lateinit var btnSearch: ImageButton
-    private lateinit var edtWord:TextInputEditText
+    private lateinit var edtWord: TextInputEditText
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+    private val LOCATION_PERMISSION_REQUEST_CODE = 100
+    private lateinit var toggleGroup: MaterialButtonToggleGroup
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -48,6 +62,9 @@ class HomeFragment : Fragment() {
         imgUser = rootView.findViewById(R.id.imgUser)
         btnSearch = rootView.findViewById(R.id.btnSearch)
         edtWord = rootView.findViewById(R.id.edtWord)
+        toggleGroup = rootView.findViewById(R.id.btnToggleGroup)
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireContext())
 
         imgUser.setOnClickListener {
             val userFragment = UserFragment()
@@ -83,20 +100,40 @@ class HomeFragment : Fragment() {
             )
         }
 
-        btnCercanos.setOnClickListener{
-
+        btnCercanos.setOnClickListener {
+            checkLocationPermissionAndGetLocation()
         }
 
         recyclerView.adapter = adapter
         setupButtonToggle()
 
         btnSearch.setOnClickListener {
-            //filtrar recyclerview con la busqueda de la palabra edtWord comparado con el titulo de la edificacion
             val word = edtWord.text.toString()
             val edificacionesFiltradas = edificaciones.filter { it.sitNom.contains(word, ignoreCase = true) }
-            val adapter = EdificacionAdapter(edificacionesFiltradas) {
+
+            when (toggleGroup.checkedButtonId) {
+                R.id.btnListar -> {
+                    val adapter = EdificacionAdapterTwo(edificacionesFiltradas) {
+                    }
+                    recyclerView.adapter = adapter
+                    recyclerView.layoutManager = LinearLayoutManager(
+                        requireContext(),
+                        LinearLayoutManager.VERTICAL,
+                        false
+                    )
+                }
+                else -> {
+                    val adapter = EdificacionAdapter(edificacionesFiltradas) {
+                    }
+                    recyclerView.adapter = adapter
+                    recyclerView.layoutManager = LinearLayoutManager(
+                        requireContext(),
+                        LinearLayoutManager.HORIZONTAL,
+                        false
+                    )
+
+                }
             }
-            recyclerView.adapter = adapter
 
         }
 
@@ -166,7 +203,114 @@ class HomeFragment : Fragment() {
         toggleGroup.check(R.id.btnMasVisitados)
     }
 
+    private fun checkLocationPermissionAndGetLocation() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            getCurrentLocation()
+        } else {
+            requestPermissions(
+                arrayOf(Manifest.permission.ACCESS_FINE_LOCATION),
+                LOCATION_PERMISSION_REQUEST_CODE
+            )
+        }
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentLocation()
+            } else {
+                Toast.makeText(
+                    requireContext(),
+                    "Permiso de ubicación denegado",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
+    }
+
+
+    private fun getCurrentLocation() {
+        if (ContextCompat.checkSelfPermission(
+                requireContext(),
+                Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        ) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location: Location? ->
+                location?.let {
+                    val userLat = it.latitude
+                    val userLon = it.longitude
+                    sortEdificacionesByDistance(userLat, userLon)
+
+                } ?: run{
+                    Toast.makeText(
+                        requireContext(),
+                        "No se pudo obtener la ubicación",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        } else {
+            Toast.makeText(
+                requireContext(),
+                "Permiso de ubicación no otorgado",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+
+    }
+
+    private fun sortEdificacionesByDistance(userLat: Double, userLon: Double) {
+        val sortedEdificaciones = edificaciones.sortedBy { edificacion ->
+            val edificacionLat = edificacion.sitCooY.toDouble()
+            val edificacionLon = edificacion.sitCooX.toDouble()
+            calcularDistancia(userLat, userLon, edificacionLat, edificacionLon)
+        }
+
+        when (toggleGroup.checkedButtonId) {
+            R.id.btnListar -> {
+                val adapter = EdificacionAdapterTwo(sortedEdificaciones) {
+                }
+                recyclerView.adapter = adapter
+                recyclerView.layoutManager = LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.VERTICAL,
+                    false
+                )
+            }
+            else -> {
+                val adapter = EdificacionAdapter(sortedEdificaciones) {
+                }
+                recyclerView.adapter = adapter
+                recyclerView.layoutManager = LinearLayoutManager(
+                    requireContext(),
+                    LinearLayoutManager.HORIZONTAL,
+                    false
+                )
+
+            }
+        }
+    }
+
+    private fun calcularDistancia(lat1: Double, lon1: Double, lat2: Double, lon2: Double): Double {
+        val radioTierra = 6371e3 // Radio de la Tierra en metros
+        val dLat = Math.toRadians(lat2 - lat1)
+        val dLon = Math.toRadians(lon2 - lon1)
+
+        val a = sin(dLat / 2).pow(2) +
+                cos(Math.toRadians(lat1)) * cos(Math.toRadians(lat2)) *
+                sin(dLon / 2).pow(2)
+        val c = 2 * atan2(sqrt(a), sqrt(1 - a))
+
+        return radioTierra * c // Distancia en metros
+    }
+
 }
-
-
-
