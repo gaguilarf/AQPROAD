@@ -1,261 +1,165 @@
 package com.techteam.aqproad.AudioService
 
-import android.app.ActivityManager
+import TextToSpeechManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
+import android.os.Build
 import android.os.IBinder
-import android.speech.tts.TextToSpeech
-import android.speech.tts.UtteranceProgressListener
-import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
-import java.util.Locale
 
-class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
-
-    private lateinit var textToSpeech: TextToSpeech
-    private val CHANNEL_ID = "TTS_SERVICE_CHANNEL"
-    private val NOTIFICATION_ID = 1
-    private var currentText = ""
-    private var isInitialized = false
-    var isSpeaking = false
-    private var isPlaying = false
+class TextToSpeechService : Service() {
 
     companion object {
-        const val ACTION_START = "ACTION_START"
-        const val ACTION_SPEAK = "ACTION_SPEAK"
-        const val ACTION_STOP = "ACTION_STOP"
-        const val ACTION_STOP_NOTIFICATION = "ACTION_STOP_NOTIFICATION"
-        const val EXTRA_TEXT = "EXTRA_TEXT"
+        const val CHANNEL_ID = "TextToSpeechChannel"
+        const val ACTION_PLAY_PAUSE = "com.techteam.aqproad.ACTION_PLAY_PAUSE"
+        const val ACTION_STOP = "com.techteam.aqproad.ACTION_STOP"
+        const val EXTRA_TEXT = "com.techteam.aqproad.EXTRA_TEXT"
+        var isServiceRunning = false
     }
+
+    private lateinit var textToSpeechManager: TextToSpeechManager
+    private var isPlaying = false
+    private var currentText = ""
+    private var isAppInForeground = true
+
 
     override fun onCreate() {
         super.onCreate()
-        textToSpeech = TextToSpeech(this, this)
+        textToSpeechManager = TextToSpeechManager(this)
         createNotificationChannel()
+        isServiceRunning = true
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        when (intent?.action) {
-            ACTION_START -> {
-                startTtsService()
-                Log.d("TTSX", "Servicio TTS iniciado")
-            }
-            ACTION_SPEAK -> {
-                val text = intent.getStringExtra(EXTRA_TEXT) ?: ""
-                if(text.isNotEmpty()){
-                    currentText = text
-                    if(isInitialized){
-                        speak(text)
-                        isSpeaking = true
-                        Log.d("TTS", "TTS hablando: $text")
-                    }
-                    else{
-                        Log.e("TTS","TTS no inicializado")
-                    }
-                } else{
-                    Log.e("TTS","Texto vacio")
-                }
-
-            }
-            ACTION_STOP -> {
-                stopTtsService()
-                isSpeaking = false
-                Log.d("TTS", "Servicio TTS detenido")
-            }
-            ACTION_STOP_NOTIFICATION -> {
-                if (!isSpeaking) {
-                    stopForeground(STOP_FOREGROUND_REMOVE)
+        intent?.let {
+            when (it.action) {
+                ACTION_PLAY_PAUSE -> handlePlayPause()
+                ACTION_STOP -> handleStop()
+                "foreground_status"-> setAppInForeground(true)
+                "background_status" -> setAppInForeground(false)
+                "update_status" ->  updateNotificationVisibility()
+                else -> {
+                    currentText = it.getStringExtra(EXTRA_TEXT) ?: ""
+                    startTextToSpeech()
                 }
             }
         }
-        return START_STICKY
+        return START_STICKY  // Asegura que el servicio se reinicie si se detiene por el sistema
     }
 
-    private fun startTtsService() {
-        //No initialization logic is needed here, it is handled by onInit
-        //We can log that this service started
-        Log.d("TTS", "Servicio TTS inicializado correctamente")
-    }
-
-    private fun speak(text: String) {
-        textToSpeech.speak(text, TextToSpeech.QUEUE_FLUSH, null, "utteranceId")
-        startForegroundService()
-        textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
-            override fun onStart(utteranceId: String?) {
-                isSpeaking = true
-            }
-
-            override fun onDone(utteranceId: String?) {
-                isSpeaking = false
-                if (!isAppInForeground()) {
-                    stopForeground(STOP_FOREGROUND_REMOVE)
+    private fun startTextToSpeech() {
+        if (currentText.isNotEmpty()) {
+            textToSpeechManager.initialize { isInitialized ->
+                if (isInitialized) {
+                    textToSpeechManager.speak(currentText)
+                    isPlaying = true
+                    updateNotificationVisibility()
                 }
             }
-
-            override fun onError(utteranceId: String?) {
-                isSpeaking = false
-                Log.e("TTS", "Error speaking text: $utteranceId")
-            }
-        })
-    }
-
-    fun startText(description: String) {
-        if (!isPlaying) {
-            textToSpeech.speak(description, TextToSpeech.QUEUE_FLUSH, null, "tts_id")
         }
     }
 
-    fun pauseText() {
-        if (isPlaying) {
-            // Nota: Android TTS no soporta pausa nativa. Podrías detener el TTS aquí.
-            textToSpeech.stop()
+    private fun handlePlayPause() {
+        if (textToSpeechManager.isSpeaking()) {
+            textToSpeechManager.stop()
             isPlaying = false
+        } else {
+            if (currentText.isNotEmpty()) {
+                textToSpeechManager.speak(currentText)
+                isPlaying = true
+            }
         }
+        updateNotificationVisibility()
     }
 
-    fun stopText() {
-        textToSpeech.stop()
-        isPlaying = false
-    }
-
-    // Inicia o reanuda el servicio
-    fun startOrResumeTts(description: String) {
-        val intent = Intent(this, TextToSpeechService::class.java)
-        bindService(intent, connection, BIND_AUTO_CREATE)
-        startService(intent)
-        textToSpeech?.startText(description)
-    }
-
-    // Pausa la reproducción
-    fun pauseTtsPlayback() {
-        textToSpeechService?.pauseText()
-    }
-
-    // Detiene la reproducción
-    fun stopTtsPlayback() {
-        textToSpeechService?.stopText()
-        unbindService(connection)
-        stopService(Intent(this, TextToSpeechService::class.java))
-    }
-
-    private var textToSpeechService: TextToSpeechService? = null
-    private val connection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            textToSpeechService = (service as TextToSpeechService.LocalBinder).getService()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            textToSpeechService = null
-        }
-    }
-
-    private fun stopTtsService() {
-        textToSpeech.stop()
-        if (::textToSpeech.isInitialized) {
-            textToSpeech.shutdown()
-        }
-        stopForeground(STOP_FOREGROUND_REMOVE)
+    private fun handleStop() {
+        textToSpeechManager.stop()
+        stopForeground(true)
         stopSelf()
+        isServiceRunning = false
     }
 
     private fun createNotificationChannel() {
-        val channel = NotificationChannel(
-            CHANNEL_ID,
-            "TTS Service Channel",
-            NotificationManager.IMPORTANCE_DEFAULT
-        )
-        val manager = getSystemService(NotificationManager::class.java)
-        manager.createNotificationChannel(channel)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel = NotificationChannel(
+                CHANNEL_ID,
+                "Text-to-Speech Service",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager?.createNotificationChannel(serviceChannel)
+        }
+    }
+    private fun updateNotificationVisibility() {
+        if (isAppInForeground || !isPlaying) {
+            stopForeground(true) // Ocultar la notificación si la app está en primer plano o no esta reproduciendo
+        } else {
+            startForeground(1, buildNotification()) // Mostrar la notificación si la app está en segundo plano y esta reproduciendo
+        }
     }
 
-    private fun startForegroundService() {
-        // No mostrar notificación si la app está en primer plano
-        if (isAppInForeground()) {
-            return
-        }
 
-        val notificationIntent = Intent(this, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
+    private fun buildNotification(): Notification {
+        val playPauseIntent = Intent(this, TextToSpeechService::class.java).apply {
+            action = ACTION_PLAY_PAUSE
         }
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE
+        val playPausePendingIntent = PendingIntent.getService(
+            this, 0, playPauseIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
-
-        val notification: Notification = NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("TTS Service")
-            .setContentText("Reproduciendo: $currentText")
-            .setSmallIcon(R.drawable.ic_play)
-            .setContentIntent(pendingIntent)
-            .setPriority(NotificationCompat.PRIORITY_DEFAULT)
-            .setOngoing(true)
-            .addAction(R.drawable.ic_stop, "Detener", createStopPendingIntent())
-            .build()
-
-        startForeground(NOTIFICATION_ID, notification)
-    }
-
-    private fun createStopPendingIntent(): PendingIntent {
         val stopIntent = Intent(this, TextToSpeechService::class.java).apply {
             action = ACTION_STOP
         }
-        return PendingIntent.getService(
-            this, 0, stopIntent, PendingIntent.FLAG_IMMUTABLE
+        val stopPendingIntent = PendingIntent.getService(
+            this, 0, stopIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
+
+
+        val activityIntent = Intent(this, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+        val activityPendingIntent = PendingIntent.getActivity(
+            this, 0, activityIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+        val playPauseIcon =
+            if (textToSpeechManager.isSpeaking()) R.drawable.ic_pause else R.drawable.ic_play
+
+
+        val builder = NotificationCompat.Builder(this, CHANNEL_ID)
+            .setContentTitle("Text-to-Speech")
+            .setContentText(currentText.take(50))
+            .setSmallIcon(R.drawable.ic_play)
+            .setContentIntent(activityPendingIntent)
+            .addAction(playPauseIcon, if (isPlaying) "Pause" else "Play", playPausePendingIntent)
+            .addAction(R.drawable.ic_stop, "Stop", stopPendingIntent)
+            .setOngoing(true)
+
+
+        return builder.build()
     }
+    fun setAppInForeground(inForeground: Boolean){
+        isAppInForeground = inForeground
+        updateNotificationVisibility()
+    }
+
 
     override fun onDestroy() {
         super.onDestroy()
-        Log.d("TTS", "Servicio TTS destruido")
-        if (::textToSpeech.isInitialized) {
-            textToSpeech.shutdown()
-        }
+        textToSpeechManager.shutdown()
+        isServiceRunning = false
     }
 
-    fun isTtsPlaying(): Boolean {
-        return isSpeaking
-    }
 
     override fun onBind(intent: Intent?): IBinder? {
-        return null
-    }
-
-    override fun onInit(status: Int) {
-        if (status == TextToSpeech.SUCCESS) {
-            // set language
-            val result = textToSpeech.setLanguage(Locale("es", "ES"))
-
-            if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                Log.e("TTS", "Lenguaje no soportado")
-            } else {
-                isInitialized = true
-                Log.d("TTS", "TTS inicializado en Oninit")
-            }
-        } else {
-            Log.e("TTS", "TTS Initialization failed")
-        }
-    }
-
-    private fun isAppInForeground(): Boolean {
-        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
-        val appProcesses = activityManager.runningAppProcesses ?: return false
-        val packageName = applicationContext.packageName
-
-        for (process in appProcesses) {
-            if (process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
-                && process.processName == packageName) {
-                return true
-            }
-        }
-        return false
+        return null //No necesitamos vinculación
     }
 }

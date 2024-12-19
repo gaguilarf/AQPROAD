@@ -1,11 +1,12 @@
 package com.techteam.aqproad.Item
 
 import android.Manifest
+import android.app.PendingIntent
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -15,7 +16,6 @@ import android.widget.EditText
 import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.RatingBar
-import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -28,12 +28,12 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.tasks.OnSuccessListener
 import com.google.firebase.auth.FirebaseAuth
+import com.techteam.aqproad.MainActivity
 import com.techteam.aqproad.R
 import com.example.recyclerview.ComentarioAdapter
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
-import com.techteam.aqproad.AudioService.TextToSpeechManager
 import com.techteam.aqproad.AudioService.TextToSpeechService
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
@@ -54,15 +54,12 @@ class ItemFragment : Fragment() {
     private lateinit var ratingManagerDB: RatingManagerDB
     private lateinit var ratingPuntajeTotal: TextView
 
-    //private var audioService: AudioService? = null Eliminamos cualquier rastro de audioservice
-    //private var isBound = false Eliminamos cualquier rastro de audioservice
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnStop: ImageButton
-    private lateinit var audioSeekBar: SeekBar
-    private lateinit var tvCurrentTime: TextView
-    private lateinit var tvTotalDuration: TextView
     private var buildingID: Int?=null
-    private lateinit var textToSpeechManager: TextToSpeechManager
+    private var description: String? = null
+    private var isTtsPlaying: Boolean = false
+
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -79,7 +76,7 @@ class ItemFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        buildingID= arguments?.getInt(ARG_BUILDING_ID) //inicializando el id de la edificacion
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
         ratingManagerDB = RatingManagerDB()
@@ -90,9 +87,9 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
-        textToSpeechManager = TextToSpeechManager(view.context)
+
         val title = arguments?.getString("title") ?: ""
-        val description = arguments?.getString("description") ?: ""
+        description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
         val imgString = arguments?.getString("imgUrl") ?: ""
         val sitCro = arguments?.getBoolean("Croquis") ?: false
@@ -117,7 +114,7 @@ class ItemFragment : Fragment() {
         btnBack.setOnClickListener {
             requireActivity().supportFragmentManager.popBackStack()
         }
-        setupUI(view, title, description,img, imgString)
+        setupUI(view, title, description!!,img, imgString)
         setupObservers(img)
 
         return view
@@ -134,7 +131,6 @@ class ItemFragment : Fragment() {
         //configurar RecyclerView del carrusel
         carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
         setupCarouselRecyclerView(imgString)
-        showToast("Este es el ID del sitio $img")
 
         //configurar RecyclerView de comentarios
         recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
@@ -146,59 +142,45 @@ class ItemFragment : Fragment() {
         // RatingBar y lógica asociada
         ratingPuntajeTotal = view.findViewById(R.id.txtPun)
         ratingBar = view.findViewById(R.id.ratingCalif)
-        ratingManagerDB.getActualRatingBuild(img) { message, puntaje ->
-            Log.d("SETEANDO PUNTAJE", "Puntaje de build con id: ${img}, es ${puntaje}")
-            if (puntaje != null) {
-                ratingPuntajeTotal.text = "${puntaje.toFloat()} (15 reseñas)"
-            } else {
-                message.let { it ->
-                    if (it != null) {
-                        showToast(it)
-                    }
-                }
+        buildingID?.let {
+            ratingManagerDB.getActualRatingBuild(it) { message, pt ->
+                if (pt != null)
+                    ratingPuntajeTotal.text = "${pt.toFloat()} (15 reseñas)"
+                else
+                    message?.let { it1 -> showToast(it1) }
             }
         }
-
         // elementos audio service
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         btnStop = view.findViewById(R.id.btnStop)
-        audioSeekBar = view.findViewById(R.id.audioSeekBar)
-        tvCurrentTime = view.findViewById(R.id.tvCurrentTime)
-        tvTotalDuration = view.findViewById(R.id.tvTotalDuration)
 
         btnPlayPause.setOnClickListener {
-            startTextToSpeechService(description)
-
-            if (isTtsPlaying()) {
-                // ...
-                pauseTtsPlayback()
+            val serviceIntent = Intent(requireContext(), TextToSpeechService::class.java) // Usamos requireContext()
+            if(isTtsPlaying) {
+                serviceIntent.action = TextToSpeechService.ACTION_PLAY_PAUSE
                 btnPlayPause.setImageResource(R.drawable.ic_play)
-            } else {
-                // ...
-                startOrResumeTts(description)
+                isTtsPlaying = false
+
+            }else{
+                serviceIntent.putExtra(TextToSpeechService.EXTRA_TEXT,description)
                 btnPlayPause.setImageResource(R.drawable.ic_pause)
+                isTtsPlaying = true
+
             }
+            requireActivity().startService(serviceIntent) // Usamos requireActivity().startService()
         }
 
         btnStop.setOnClickListener {
-            // ...
-            stopTtsPlayback()
+            val serviceIntent = Intent(requireContext(), TextToSpeechService::class.java) // Usamos requireContext()
+
+            serviceIntent.action = TextToSpeechService.ACTION_STOP
             btnPlayPause.setImageResource(R.drawable.ic_play)
-            audioSeekBar.progress = 0
-            tvCurrentTime.text = "0:00"
+            isTtsPlaying = false
+
+            requireActivity().stopService(serviceIntent) // Usamos requireActivity().stopService()
         }
 
-        audioSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                /* if (fromUser && isBound) {
-                     audioService?.mediaPlayer?.seekTo(progress)
-                 }*/
-            }
-
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
-        setupRatingBar(img)
+        setupRatingBar()
 
         val btnSendComment: Button = view.findViewById(R.id.button_send_comment)
         btnSendComment.setOnClickListener{handleSendComment(img)}
@@ -214,34 +196,8 @@ class ItemFragment : Fragment() {
         // Actualizar los TextView con los datos recibidos
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
-        //startTextToSpeechService(description)
+
     }
-
-    private fun startTextToSpeechService(description: String) {
-        textToSpeechManager.initialize { isInitialized ->
-            if (isInitialized) {
-
-                // TTS Listo, puedes comenzar a usar speak() aqui
-                Log.d("TTS", "TTS Inicializado")
-                val textToSpeak = description
-                textToSpeechManager.speak(textToSpeak)
-
-            } else {
-                // Manejar el fallo de inicialización
-                Log.e("TTS", "Fallo la inicializacion")
-            }
-        }
-        /*val startIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
-            action = TextToSpeechService.ACTION_START
-        }
-        requireContext().startService(startIntent)
-        val speakIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
-            action = TextToSpeechService.ACTION_SPEAK
-            putExtra(TextToSpeechService.EXTRA_TEXT, description)
-        }
-        requireContext().startService(speakIntent)*/
-    }
-
 
     private fun setupCarouselRecyclerView(imgString: String) {
         val images = getImagesGaleria(imgString)
@@ -269,14 +225,14 @@ class ItemFragment : Fragment() {
         viewModel_comentarios.loadComentarios(sitId)
     }
 
-    private fun setupRatingBar(sitId: Int) { //falta obtener el rating de la edificacion respectiva
+    private fun setupRatingBar() { //falta obtener el rating de la edificacion respectiva
         var isResettingRating = false
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
             if (isResettingRating) return@setOnRatingBarChangeListener
 
             if (isUserLoggedIn()) {
                 isUserAtLocation { isAtLocation ->
-                    if (!isAtLocation) { //cambiando a false para testear !isAtLocation
+                    if (!isAtLocation) {
                         showToast("Debe estar en la ubicación de la edificación para calificar.")
                         isResettingRating = true
                         ratingBar.rating = 0f
@@ -284,7 +240,7 @@ class ItemFragment : Fragment() {
                         return@isUserAtLocation
                     } else {
                         showToast("Puedes calificar.")
-                        saveUserRating(rating, sitId)
+                        saveUserRating(rating)
                     }
                 }
             } else {
@@ -327,15 +283,15 @@ class ItemFragment : Fragment() {
         transaction.commit()
     }
 
-    private fun saveUserRating(rating: Float, sitId: Int) {
+    private fun saveUserRating(rating: Float) {
         val usuarioActual = FirebaseAuth.getInstance().currentUser?.displayName?:"Usuario"
 
-        sitId.let {
+        buildingID?.let {
             ratingManagerDB.saveRating(it, rating, usuarioActual){ mensaje ->
                 showToast(mensaje)
             }
-            showToast("Gracias por calificar con $rating estrellas.")
         }
+        showToast("Gracias por calificar con $rating estrellas.")
     }
 
     private fun isUserLoggedIn(): Boolean {
@@ -372,25 +328,47 @@ class ItemFragment : Fragment() {
         })
     }
 
-    private fun isTtsPlaying(): Boolean {
-        // You can add a logic here to check if TTS is currently playing
-        // For now, just returning a hardcoded false to avoid crashing and have a functional button
-        val intent = Intent(requireContext(), TextToSpeechService::class.java)
-        return requireContext().startService(intent) != null
-
-    }
-
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
 
+    override fun onStop() {
+        super.onStop()
+        Log.d("ItemFragment", "onStop")
+        sendForegroundStatus(false)
+    }
+    override fun onStart() {
+        super.onStart()
+        Log.d("ItemFragment", "onStart")
+        sendForegroundStatus(true)
+    }
+    private fun sendForegroundStatus(isInForeground: Boolean) {
+        if(TextToSpeechService.isServiceRunning) {
+            val serviceIntent = Intent(requireContext(), TextToSpeechService::class.java)
+            serviceIntent.putExtra("isAppInForeground", isInForeground)
+            requireActivity().startService(serviceIntent)
+
+            val  serviceIntent2 = Intent(requireContext(), TextToSpeechService::class.java)
+            serviceIntent2.action = "update_status"
+            requireActivity().startService(serviceIntent2)
+
+            val intent = Intent(requireContext(), TextToSpeechService::class.java)
+            if (isInForeground){
+                intent.action = "foreground_status"
+                requireActivity().startService(intent)
+            } else{
+                intent.action = "background_status"
+                requireActivity().startService(intent)
+            }
+
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
         val stopIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
             action = TextToSpeechService.ACTION_STOP
         }
         requireContext().startService(stopIntent)
-        // textToSpeechManager.shutdown()
     }
 }
