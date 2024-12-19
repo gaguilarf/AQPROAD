@@ -159,6 +159,7 @@ class ItemFragment : Fragment() {
         //configurar RecyclerView del carrusel
         carouselRecyclerView = view.findViewById(R.id.recyclerCarousel)
         setupCarouselRecyclerView(imgString)
+        showToast("Este es el ID del sitio $img")
 
         //configurar RecyclerView de comentarios
         recyView_comentarios = view.findViewById(R.id.recyView_comentarios)
@@ -170,14 +171,19 @@ class ItemFragment : Fragment() {
         // RatingBar y lógica asociada
         ratingPuntajeTotal = view.findViewById(R.id.txtPun)
         ratingBar = view.findViewById(R.id.ratingCalif)
-        buildingID?.let {
-            ratingManagerDB.getActualRatingBuild(it) { message, pt ->
-                if (pt != null)
-                    ratingPuntajeTotal.text = "${pt.toFloat()} (15 reseñas)"
-                else
-                    message?.let { it1 -> showToast(it1) }
+        ratingManagerDB.getActualRatingBuild(img) { message, puntaje ->
+            Log.d("SETEANDO PUNTAJE", "Puntaje de build con id: ${img}, es ${puntaje}")
+            if (puntaje != null) {
+                ratingPuntajeTotal.text = "${puntaje.toFloat()} (15 reseñas)"
+            } else {
+                message.let { it ->
+                    if (it != null) {
+                        showToast(it)
+                    }
+                }
             }
         }
+
         // elementos audio service
         btnPlayPause = view.findViewById(R.id.btnPlayPause)
         btnStop = view.findViewById(R.id.btnStop)
@@ -218,7 +224,7 @@ class ItemFragment : Fragment() {
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
             override fun onStopTrackingTouch(seekBar: SeekBar?) {}
         })
-        setupRatingBar()
+        setupRatingBar(img)
 
         val btnSendComment: Button = view.findViewById(R.id.button_send_comment)
         btnSendComment.setOnClickListener{handleSendComment(img)}
@@ -313,14 +319,14 @@ class ItemFragment : Fragment() {
         viewModel_comentarios.loadComentarios(sitId)
     }
 
-    private fun setupRatingBar() { //falta obtener el rating de la edificacion respectiva
+    private fun setupRatingBar(sitId: Int) { //falta obtener el rating de la edificacion respectiva
         var isResettingRating = false
         ratingBar.setOnRatingBarChangeListener { _, rating, _ ->
             if (isResettingRating) return@setOnRatingBarChangeListener
 
             if (isUserLoggedIn()) {
                 isUserAtLocation { isAtLocation ->
-                    if (!isAtLocation) {
+                    if (!isAtLocation) { //cambiando a false para testear !isAtLocation
                         showToast("Debe estar en la ubicación de la edificación para calificar.")
                         isResettingRating = true
                         ratingBar.rating = 0f
@@ -328,7 +334,7 @@ class ItemFragment : Fragment() {
                         return@isUserAtLocation
                     } else {
                         showToast("Puedes calificar.")
-                        saveUserRating(rating)
+                        saveUserRating(rating, sitId)
                     }
                 }
             } else {
@@ -371,15 +377,15 @@ class ItemFragment : Fragment() {
         transaction.commit()
     }
 
-    private fun saveUserRating(rating: Float) {
+    private fun saveUserRating(rating: Float, sitId: Int) {
         val usuarioActual = FirebaseAuth.getInstance().currentUser?.displayName?:"Usuario"
 
-        buildingID?.let {
+        sitId.let {
             ratingManagerDB.saveRating(it, rating, usuarioActual){ mensaje ->
                 showToast(mensaje)
             }
+            showToast("Gracias por calificar con $rating estrellas.")
         }
-        showToast("Gracias por calificar con $rating estrellas.")
     }
 
     private fun isUserLoggedIn(): Boolean {
