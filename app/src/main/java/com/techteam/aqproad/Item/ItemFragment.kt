@@ -1,10 +1,17 @@
 package com.techteam.aqproad.Item
 
 import android.Manifest
+import android.app.ActivityManager
+import android.content.BroadcastReceiver
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
+import android.os.IBinder
 import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
@@ -40,6 +47,7 @@ import com.techteam.aqproad.Map.MapFragment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+import androidx.core.content.ContextCompat
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -64,6 +72,10 @@ class ItemFragment : Fragment() {
     private var buildingID: Int?=null
     private lateinit var textToSpeechManager: TextToSpeechManager
 
+    // audio también
+    private var ttsService: TextToSpeechService? = null
+    private var isBound = false
+
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
         private const val ARG_BUILDING_ID = "building_id"
@@ -74,6 +86,19 @@ class ItemFragment : Fragment() {
             args.putInt(ARG_BUILDING_ID, buildingId) //agregando id de la edificacion al bundle
             fragment.arguments = args //asignando el bundle al fragment
             return fragment
+        }
+    }
+
+    private val ttsServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            val binder = service as TextToSpeechService.LocalBinder
+            ttsService = binder.getService()
+            isBound = true
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            ttsService = null
+            isBound = false
         }
     }
 
@@ -161,7 +186,7 @@ class ItemFragment : Fragment() {
         tvTotalDuration = view.findViewById(R.id.tvTotalDuration)
 
         btnPlayPause.setOnClickListener {
-            startTextToSpeechService(description)
+            //startTextToSpeechService(description)
 
             if (isTtsPlaying()) {
                 // ...
@@ -169,14 +194,15 @@ class ItemFragment : Fragment() {
                 btnPlayPause.setImageResource(R.drawable.ic_play)
             } else {
                 // ...
-                startOrResumeTts(description)
                 btnPlayPause.setImageResource(R.drawable.ic_pause)
+                startTtsService(description)
+                //btnPlayPause.setImageResource(R.drawable.ic_pause)
             }
         }
 
         btnStop.setOnClickListener {
             // ...
-            stopTtsPlayback()
+            stopTtsService()
             btnPlayPause.setImageResource(R.drawable.ic_play)
             audioSeekBar.progress = 0
             tvCurrentTime.text = "0:00"
@@ -209,6 +235,30 @@ class ItemFragment : Fragment() {
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
         //startTextToSpeechService(description)
+    }
+
+    private fun stopTtsService() {
+        if (!isTtsPlaying()) {
+            val intent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+                action = TextToSpeechService.ACTION_STOP
+            }
+            requireContext().startService(intent)
+        }
+    }
+
+    private fun pauseTtsPlayback() {
+        val intent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_PAUSE
+        }
+        requireContext().startService(intent)
+    }
+
+    private fun startTtsService(description: String) {
+        val intent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_START
+            putExtra(TextToSpeechService.EXTRA_DESCRIPTION, description)
+        }
+        ContextCompat.startForegroundService(requireContext(), intent)
     }
 
     private fun startTextToSpeechService(description: String) {
@@ -366,18 +416,74 @@ class ItemFragment : Fragment() {
         })
     }
 
-    private fun isTtsPlaying(): Boolean {
-        // You can add a logic here to check if TTS is currently playing
-        // For now, just returning a hardcoded false to avoid crashing and have a functional button
-        val intent = Intent(requireContext(), TextToSpeechService::class.java)
-        return requireContext().startService(intent) != null
+    private val audioFinishedReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            // Cuando el audio ha terminado, actualiza el botón
+            btnPlayPause.setImageResource(R.drawable.ic_play)
+        }
+    }
 
+    override fun onStart() {
+        super.onStart()
+        // Enlaza el servicio
+        val intent = Intent(requireContext(), TextToSpeechService::class.java)
+        requireContext().bindService(intent, ttsServiceConnection, Context.BIND_AUTO_CREATE)
+
+        // Registrar el BroadcastReceiver
+        val filter = IntentFilter("com.example.tts.ACTION_AUDIO_FINISHED")
+        requireContext().registerReceiver(audioFinishedReceiver, filter,
+            Context.RECEIVER_NOT_EXPORTED)
+    }
+
+    override fun onStop() {
+        super.onStop()
+        // Desenlaza el servicio
+        if (isBound) {
+            requireContext().unbindService(ttsServiceConnection)
+            isBound = false
+        }
+        // Desregistrar el BroadcastReceiver
+        requireContext().unregisterReceiver(audioFinishedReceiver)
+
+        // Crear la notificación solo si el servicio está reproduciendo
+        if (isTtsPlaying()) {
+            val intent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+                action = TextToSpeechService.ACTION_CREATE_NOTIFICATION
+                putExtra(TextToSpeechService.EXTRA_DESCRIPTION, "Descripción del lugar") // Cambia esto según sea necesario
+            }
+            requireContext().startService(intent)
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Llamar a la acción para destruir la notificación
+        val intent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_DESTROY_NOTIFICATION
+        }
+        requireContext().startService(intent)
+    }
+
+    private fun isAppInForeground(): Boolean {
+        val activityManager = requireContext().getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses
+        val packageName = requireContext().packageName
+        for (process in appProcesses) {
+            if (process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND &&
+                process.processName == packageName) {
+                return true
+            }
+        }
+        return false
+    }
+
+    private fun isTtsPlaying(): Boolean {
+        return ttsService?.isTtsPlaying() ?: false
     }
 
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
-
 
     override fun onDestroy() {
         super.onDestroy()
