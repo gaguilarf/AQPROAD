@@ -10,10 +10,10 @@
         android:id="@+id/map_menu"
         android:icon="@drawable/icon_map"
         />
-    <item android:title="Favorites"
-        android:id="@+id/favorites_menu"
-        android:icon="@drawable/icon_heart"
-        />
+    <item
+        android:id="@+id/chatbot_menu"
+        android:icon="@drawable/icon_chatbot"
+        android:title="Chatbot" />
     <item android:title="User"
         android:id="@+id/user_menu"
         android:icon="@drawable/icon_user"

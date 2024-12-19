@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="80dp"
     tools:context=".Item.ItemFragment">
 
     <FrameLayout
@@ -118,7 +117,13 @@
                     android:layout_height="204dp"
                     android:layout_gravity="bottom|center"
                     android:scaleType="centerCrop"
-                    android:src="@drawable/selector_map" />
+                    android:src="@drawable/selector_map">
+                </ImageView>
+                
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    />
 
             </androidx.cardview.widget.CardView>
 
@@ -338,12 +343,6 @@
             android:maxLines="3"
             android:text="Se encuentra ubicada entre el Portal de la Municipalidad y el Portal de Flores. Templo erigido por...."
             android:textSize="14sp" />
-
-        <com.techteam.aqproad.Item.LaCompaniaView
-            android:id="@+id/laCompaniaView"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:visibility="gone" />
 
     </FrameLayout>
 </ScrollView>

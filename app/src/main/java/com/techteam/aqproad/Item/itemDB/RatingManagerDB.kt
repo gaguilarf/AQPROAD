@@ -27,8 +27,6 @@ class RatingManagerDB {
                     onFailure = { mensaje ->
                         callback(mensaje, null)
                     })
-            } else {
-                callback("No se ha encontrado ninguna edificación con el id enviado", null)
             }
         }
     }

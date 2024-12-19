@@ -40,13 +40,15 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/imgUser" />
 
-    <TextView
-        android:id="@+id/txtDbUser"
+    <EditText
+        android:id="@+id/edtBdUser"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/username"
         android:textSize="16sp"
+        android:focusable="false"
         android:gravity="end"
+        android:background="@drawable/edittext_line_white"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -63,17 +65,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/txtUser" />
 
-    <TextView
-        android:id="@+id/txtDbCorreo"
+    <EditText
+        android:id="@+id/edtBdCorreo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/correo2"
         android:textSize="16sp"
         android:gravity="end"
+        android:focusable="false"
+        android:background="@drawable/edittext_line_white"
         android:layout_marginTop="20dp"
         android:layout_marginEnd="15dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/txtDbUser" />
+        app:layout_constraintTop_toBottomOf="@+id/edtBdUser" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnSave"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/guardar_usuario"
+        android:textSize="18sp"
+        android:backgroundTint="@color/orange"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:visibility="invisible"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnLogout"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnEdtUser"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/editar_usuario"
+        android:textSize="18sp"
+        android:backgroundTint="@color/orange"
+        android:layout_marginBottom="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btnLogout"/>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnLogout"

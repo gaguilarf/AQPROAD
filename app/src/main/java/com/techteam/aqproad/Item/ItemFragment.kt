@@ -1,15 +1,11 @@
 package com.techteam.aqproad.Item
 
 import android.Manifest
-import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
-import android.content.ServiceConnection
 import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
-import android.os.Handler
-import android.os.IBinder
+import android.speech.tts.TextToSpeech
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -37,14 +33,13 @@ import com.example.recyclerview.ComentarioAdapter
 import com.techteam.aqproad.Home.ComentarioViewModel
 import com.techteam.aqproad.Home.ComentarioRepository
 import androidx.lifecycle.Observer
-import com.techteam.aqproad.AudioService.AudioService
-import com.techteam.aqproad.Home.Comentario
+import com.techteam.aqproad.AudioService.TextToSpeechManager
+import com.techteam.aqproad.AudioService.TextToSpeechService
 import com.techteam.aqproad.Item.itemDB.RatingManagerDB
 import com.techteam.aqproad.Map.MapFragment
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
 
 class ItemFragment : Fragment() {
     private lateinit var fusedLocationClient: FusedLocationProviderClient
@@ -59,18 +54,15 @@ class ItemFragment : Fragment() {
     private lateinit var ratingManagerDB: RatingManagerDB
     private lateinit var ratingPuntajeTotal: TextView
 
-    // para el AudioService
-    private var audioService: AudioService? = null
-    private var isBound = false
+    //private var audioService: AudioService? = null Eliminamos cualquier rastro de audioservice
+    //private var isBound = false Eliminamos cualquier rastro de audioservice
     private lateinit var btnPlayPause: ImageButton
     private lateinit var btnStop: ImageButton
     private lateinit var audioSeekBar: SeekBar
     private lateinit var tvCurrentTime: TextView
     private lateinit var tvTotalDuration: TextView
-    private val handler = Handler()
-
-    //private var buildingName: String? = null // nombre de la edificación
     private var buildingID: Int?=null
+    private lateinit var textToSpeechManager: TextToSpeechManager
 
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1
@@ -98,18 +90,24 @@ class ItemFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.fragment_item, container, false)
+        textToSpeechManager = TextToSpeechManager(view.context)
         val title = arguments?.getString("title") ?: ""
         val description = arguments?.getString("description") ?: ""
         val img = arguments?.getInt("img") ?: 0
         val imgString = arguments?.getString("imgUrl") ?: ""
+        val sitCro = arguments?.getBoolean("Croquis") ?: false
+        val imgPlano = view.findViewById<ImageView>(R.id.img_plano)
 
         val btnBack = view.findViewById<ImageButton>(R.id.btn_back)
         val showMap = view.findViewById<TextView>(R.id.text_show_map)
 
+        if(!sitCro){
+            imgPlano.setImageResource(R.drawable.selector_nomap)
+        }
+
         showMap.setOnClickListener{
             val mapFragment = MapFragment()
 
-            // Realizar la transacción del fragmento
             val fragmentManager = (context as AppCompatActivity).supportFragmentManager
             fragmentManager.beginTransaction()
                 .replace(R.id.main_container, mapFragment)
@@ -121,6 +119,7 @@ class ItemFragment : Fragment() {
         }
         setupUI(view, title, description,img, imgString)
         setupObservers(img)
+
         return view
     }
 
@@ -168,17 +167,22 @@ class ItemFragment : Fragment() {
         tvTotalDuration = view.findViewById(R.id.tvTotalDuration)
 
         btnPlayPause.setOnClickListener {
-            if (audioService?.isPlaying == true) {
-                startAudioService("PAUSE")
+            startTextToSpeechService(description)
+
+            if (isTtsPlaying()) {
+                // ...
+                pauseTtsPlayback()
                 btnPlayPause.setImageResource(R.drawable.ic_play)
             } else {
-                startAudioService("PLAY")
+                // ...
+                startOrResumeTts(description)
                 btnPlayPause.setImageResource(R.drawable.ic_pause)
             }
         }
 
         btnStop.setOnClickListener {
-            startAudioService("STOP")
+            // ...
+            stopTtsPlayback()
             btnPlayPause.setImageResource(R.drawable.ic_play)
             audioSeekBar.progress = 0
             tvCurrentTime.text = "0:00"
@@ -186,9 +190,9 @@ class ItemFragment : Fragment() {
 
         audioSeekBar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
             override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                if (fromUser && isBound) {
-                    audioService?.mediaPlayer?.seekTo(progress)
-                }
+                /* if (fromUser && isBound) {
+                     audioService?.mediaPlayer?.seekTo(progress)
+                 }*/
             }
 
             override fun onStartTrackingTouch(seekBar: SeekBar?) {}
@@ -200,32 +204,44 @@ class ItemFragment : Fragment() {
         btnSendComment.setOnClickListener{handleSendComment(img)}
 
         val btnExpand: ImageButton = view.findViewById(R.id.btn_expand)
-        btnExpand.setOnClickListener{ openCroquisFragment()}
+        val sitCro = arguments?.getBoolean("Croquis") ?: false
+        btnExpand.setOnClickListener{
+            if(sitCro){
+                openCroquisFragment()
+            }
+        }
 
         // Actualizar los TextView con los datos recibidos
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
-
-        val imageResource = getImageResourceForId(img)
-        //view.findViewById<ImageView>(R.id.img_main).setImageResource(imageResource)
+        //startTextToSpeechService(description)
     }
 
-    private fun getImageResourceForId(sitId: Int): Int {
-        return when (sitId) {
-            1 -> R.raw.museo_santuarios_andinos
-            2 -> R.raw.plaza_armas_arequipa
-            3 -> R.raw.museo_arte_virreinal
-            4 -> R.raw.plaza_san_francisco
-            5 -> R.raw.parque_libertad_expresion
-            6 -> R.raw.iglesia
-            7 -> R.raw.casona_santa_catalina
-            8 -> R.raw.teatro_municipal
-            9 -> R.raw.mirador_yanahuara
-            10 -> R.raw.monasterio_santa_catalina
-            // Agrega más condiciones si es necesario
-            else -> R.raw.museo_santuarios_andinos // Imagen predeterminada si no coincide
+    private fun startTextToSpeechService(description: String) {
+        textToSpeechManager.initialize { isInitialized ->
+            if (isInitialized) {
+
+                // TTS Listo, puedes comenzar a usar speak() aqui
+                Log.d("TTS", "TTS Inicializado")
+                val textToSpeak = description
+                textToSpeechManager.speak(textToSpeak)
+
+            } else {
+                // Manejar el fallo de inicialización
+                Log.e("TTS", "Fallo la inicializacion")
+            }
         }
+        /*val startIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_START
+        }
+        requireContext().startService(startIntent)
+        val speakIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_SPEAK
+            putExtra(TextToSpeechService.EXTRA_TEXT, description)
+        }
+        requireContext().startService(speakIntent)*/
     }
+
 
     private fun setupCarouselRecyclerView(imgString: String) {
         val images = getImagesGaleria(imgString)
@@ -235,66 +251,6 @@ class ItemFragment : Fragment() {
     private fun getImagesGaleria(imgString: String) : List<String> { //aqui debe configurarse otro repositorio para als imagenes respectivas a la edificacion
         return createListImages(imgString)
     }
-//
-//    private fun setupObservers(img: Int) {
-//        val repository = ComentarioRepository() //Falta pasar el nombre de la edificacion para cargar los comentarios respectivos
-//        viewModel_comentarios = ComentarioViewModel(repository)
-//        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-//            adapter_comentarios = ComentarioAdapter(comentarios)
-//            recyView_comentarios.adapter = adapter_comentarios
-//        })
-//        viewModel_comentarios.loadComentarios(img)
-//    }
-
-    /*
-    private fun setupObservers(img: Int) {
-        val repository = ComentarioRepository()
-        viewModel_comentarios = ComentarioViewModel(repository)
-
-        // Inicializa el adaptador una vez
-        adapter_comentarios = ComentarioAdapter(listOf())
-        recyView_comentarios.adapter = adapter_comentarios
-
-        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-            adapter_comentarios.updateData(comentarios) // Método para actualizar la lista
-        })
-
-        viewModel_comentarios.loadComentarios(img)
-    }
-     */
-/*
-    private fun setupObservers(img: Int) {
-        val repository = ComentarioRepository()
-        viewModel_comentarios = ComentarioViewModel(repository)
-
-        // Inicializa el adaptador una vez
-        adapter_comentarios = ComentarioAdapter(listOf())
-        recyView_comentarios.adapter = adapter_comentarios
-
-        viewModel_comentarios.loadComentarios(img)
-        Log.d("ForeachItemFragment", "COMENTARIOS: " + viewModel_comentarios.comentarios)
-
-        // Observa los cambios en los comentarios
-        /*viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-            adapter_comentarios.updateData(comentarios)
-        })*/
-
-        Log.d("ForeachItemFragment", "Test setupObservers")
-
-        viewModel_comentarios.comentarios.observe(viewLifecycleOwner, Observer { comentarios ->
-
-            Log.d("ForeachItemFragment", "COMENTARIOS COUNT: " + comentarios.size)
-            comentarios.forEach{ a ->
-                Log.d("ForeachItemFragment", a.autor + ": " + a.contenido)
-            }
-            if (!::adapter_comentarios.isInitialized) {
-                adapter_comentarios = ComentarioAdapter(comentarios)
-                recyView_comentarios.adapter = adapter_comentarios
-            } else {
-                adapter_comentarios.updateData(comentarios)
-            }
-        })
-    }*/
 
     private fun setupObservers(sitId: Int) {
         val repository = ComentarioRepository()
@@ -416,66 +372,25 @@ class ItemFragment : Fragment() {
         })
     }
 
+    private fun isTtsPlaying(): Boolean {
+        // You can add a logic here to check if TTS is currently playing
+        // For now, just returning a hardcoded false to avoid crashing and have a functional button
+        val intent = Intent(requireContext(), TextToSpeechService::class.java)
+        return requireContext().startService(intent) != null
+
+    }
+
     private fun showToast(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 
-    // Funciones AudioService
-    override fun onStart() {
-        super.onStart()
-        Intent(requireContext(), AudioService::class.java).also { intent ->
-            requireActivity().bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+
+    override fun onDestroy() {
+        super.onDestroy()
+        val stopIntent = Intent(requireContext(), TextToSpeechService::class.java).apply {
+            action = TextToSpeechService.ACTION_STOP
         }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        if (isBound) {
-            requireActivity().unbindService(serviceConnection)
-            isBound = false
-        }
-        handler.removeCallbacksAndMessages(null)
-    }
-
-    private fun startAudioService(action: String) {
-        val intent = Intent(requireContext(), AudioService::class.java).apply { this.action = action }
-        requireActivity().startService(intent)
-    }
-
-    private val serviceConnection = object : ServiceConnection {
-        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
-            val binder = service as AudioService.AudioBinder
-            audioService = binder.getService()
-            isBound = true
-            initializeSeekBar()
-        }
-
-        override fun onServiceDisconnected(name: ComponentName?) {
-            audioService = null
-            isBound = false
-        }
-    }
-
-    private fun initializeSeekBar() {
-        audioService?.let {
-            val duration = it.mediaPlayer.duration
-            audioSeekBar.max = duration
-            tvTotalDuration.text = formatTime(duration)
-
-            handler.post(object : Runnable {
-                override fun run() {
-                    audioSeekBar.progress = it.mediaPlayer.currentPosition
-                    tvCurrentTime.text = formatTime(it.mediaPlayer.currentPosition)
-                    handler.postDelayed(this, 1000)
-                }
-            })
-        }
-    }
-
-    private fun formatTime(ms: Int): String {
-        val minutes = TimeUnit.MILLISECONDS.toMinutes(ms.toLong())
-        val seconds = TimeUnit.MILLISECONDS.toSeconds(ms.toLong()) % 60
-        return String.format("%d:%02d", minutes, seconds)
+        requireContext().startService(stopIntent)
+        // textToSpeechManager.shutdown()
     }
 }
-

@@ -1,6 +1,7 @@
 package com.techteam.aqproad.Home
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -44,6 +45,7 @@ class EdificacionAdapter(
                     bundle.putString("description", edificaciones[position].sitDes)
                     bundle.putInt("img", position+1)
                     bundle.putString("imgUrl", edificaciones[position].imgUrl)
+                    bundle.putBoolean("Croquis", edificaciones[position].sitCro)
                     itemFragment.arguments = bundle
 
                     // Realizar la transacción del fragmento
@@ -77,13 +79,14 @@ class EdificacionAdapter(
     }
 
     private fun getImageResourceForTitle(title: String): Int {
+        Log.d("revTitulo", "title: $title")
         return when (title.lowercase()) { // Convertir a minúsculas para evitar problemas de mayúsculas/minúsculas
             "museo santuarios andinos" -> R.raw.museo_santuarios_andinos
             "plaza de armas" -> R.raw.plaza_armas_arequipa
             "museo de arte virreinal" -> R.raw.museo_arte_virreinal
             "plaza de san francisco" -> R.raw.plaza_san_francisco
             "parque libertad" -> R.raw.parque_libertad_expresion
-            "iglesia de la compañia" -> R.raw.iglesia
+            "iglesia de la compania" -> R.raw.iglesia
             "casona de santa catalina" -> R.raw.casona_santa_catalina
             "teatro municipal" -> R.raw.teatro_municipal
             "mirador de yanahuara" -> R.raw.mirador_yanahuara

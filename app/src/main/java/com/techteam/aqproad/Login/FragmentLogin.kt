@@ -148,11 +148,9 @@ class FragmentLogin : Fragment() {
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
                     Log.d("FRAGMENT LOGIN", "Se ha seteado el username al objeto currentUser")
-                    Toast.makeText(context, "Perfil actualizado", Toast.LENGTH_SHORT).show()
                 }
                 else {
                     Log.d("FRAGMENT LOGIN", "Error al guardar el username al objeto currentUser")
-                    Toast.makeText(context, "Error al actualizar perfil", Toast.LENGTH_SHORT).show()
                 }
             }
     }
