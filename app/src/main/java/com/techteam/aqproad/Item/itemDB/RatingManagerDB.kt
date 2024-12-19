@@ -39,7 +39,7 @@ class RatingManagerDB {
                     if (puntaje != null)
                         onSuccess(puntaje)
                     else
-                        onFailure("El puntaje no se econtro dado el id del sitio")
+                        onFailure("El puntaje no se encontro dado el id del sitio")
 
                 } else {
                     onFailure("No existe el docuemnto o no contiene la propiedad sitPun")
@@ -80,10 +80,44 @@ class RatingManagerDB {
                 } else {
                     createUserRating(colCalificacion, usuarioActual, rating, callback)
                 }
+                //update build rating
+                updateBuildRating(docId, callback)
+                Log.d("DENTRO DE RATING MANAGER DB", "Se ha actualizado el rating de la edificacion")
             }
             .addOnFailureListener { e ->
                 callback("Error durante la búsqueda del documento en la colección anidada: ${e.message}")
             }
+    }
+
+    private fun updateBuildRating(docId: String, callback: (String) -> Unit) {
+        val colCalificacion = db.collection("Sitios_turisticos")
+            .document(docId)
+            .collection("Calificacion")
+
+        colCalificacion.get().addOnSuccessListener { querySnapshot ->
+            var total = 0.0
+            var count = 0
+
+            for (document in querySnapshot) {
+                val calificacion = document.getDouble("usuCal")
+                if (calificacion != null) {
+                    total += calificacion
+                    count++
+                }
+            }
+
+            if (count > 0) {
+                val promedio = total / count
+                val edificacion = db.collection("Sitios_turisticos").document(docId)
+                edificacion.update("sitPun", promedio)
+                    .addOnSuccessListener { callback("Actualización exitosa de la edificación ${promedio}") }
+                    .addOnFailureListener {callback("Error al actualizar le edificacion")}
+            }
+
+        }.addOnFailureListener { exception ->
+            callback("Hubo un fallo al obtener la lista de las calificaciones del sitio pasado")
+        }
+
     }
 
     private fun updateUserRating(
