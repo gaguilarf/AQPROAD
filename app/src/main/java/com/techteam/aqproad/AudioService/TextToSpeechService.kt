@@ -1,11 +1,15 @@
 package com.techteam.aqproad.AudioService
 
+import android.app.ActivityManager
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.IBinder
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
@@ -22,12 +26,14 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
     private val NOTIFICATION_ID = 1
     private var currentText = ""
     private var isInitialized = false
-
+    var isSpeaking = false
+    private var isPlaying = false
 
     companion object {
         const val ACTION_START = "ACTION_START"
         const val ACTION_SPEAK = "ACTION_SPEAK"
         const val ACTION_STOP = "ACTION_STOP"
+        const val ACTION_STOP_NOTIFICATION = "ACTION_STOP_NOTIFICATION"
         const val EXTRA_TEXT = "EXTRA_TEXT"
     }
 
@@ -39,7 +45,7 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         when (intent?.action) {
-            ACTION_START ->{
+            ACTION_START -> {
                 startTtsService()
                 Log.d("TTSX", "Servicio TTS iniciado")
             }
@@ -49,6 +55,7 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
                     currentText = text
                     if(isInitialized){
                         speak(text)
+                        isSpeaking = true
                         Log.d("TTS", "TTS hablando: $text")
                     }
                     else{
@@ -61,7 +68,13 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
             }
             ACTION_STOP -> {
                 stopTtsService()
+                isSpeaking = false
                 Log.d("TTS", "Servicio TTS detenido")
+            }
+            ACTION_STOP_NOTIFICATION -> {
+                if (!isSpeaking) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                }
             }
         }
         return START_STICKY
@@ -78,17 +91,71 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
         startForegroundService()
         textToSpeech.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
             override fun onStart(utteranceId: String?) {
-                //TODO("Not yet implemented")
+                isSpeaking = true
             }
 
             override fun onDone(utteranceId: String?) {
-                stopForeground(STOP_FOREGROUND_REMOVE)
+                isSpeaking = false
+                if (!isAppInForeground()) {
+                    stopForeground(STOP_FOREGROUND_REMOVE)
+                }
             }
 
             override fun onError(utteranceId: String?) {
+                isSpeaking = false
                 Log.e("TTS", "Error speaking text: $utteranceId")
             }
         })
+    }
+
+    fun startText(description: String) {
+        if (!isPlaying) {
+            textToSpeech.speak(description, TextToSpeech.QUEUE_FLUSH, null, "tts_id")
+        }
+    }
+
+    fun pauseText() {
+        if (isPlaying) {
+            // Nota: Android TTS no soporta pausa nativa. Podrías detener el TTS aquí.
+            textToSpeech.stop()
+            isPlaying = false
+        }
+    }
+
+    fun stopText() {
+        textToSpeech.stop()
+        isPlaying = false
+    }
+
+    // Inicia o reanuda el servicio
+    fun startOrResumeTts(description: String) {
+        val intent = Intent(this, TextToSpeechService::class.java)
+        bindService(intent, connection, BIND_AUTO_CREATE)
+        startService(intent)
+        textToSpeech?.startText(description)
+    }
+
+    // Pausa la reproducción
+    fun pauseTtsPlayback() {
+        textToSpeechService?.pauseText()
+    }
+
+    // Detiene la reproducción
+    fun stopTtsPlayback() {
+        textToSpeechService?.stopText()
+        unbindService(connection)
+        stopService(Intent(this, TextToSpeechService::class.java))
+    }
+
+    private var textToSpeechService: TextToSpeechService? = null
+    private val connection = object : ServiceConnection {
+        override fun onServiceConnected(name: ComponentName?, service: IBinder?) {
+            textToSpeechService = (service as TextToSpeechService.LocalBinder).getService()
+        }
+
+        override fun onServiceDisconnected(name: ComponentName?) {
+            textToSpeechService = null
+        }
     }
 
     private fun stopTtsService() {
@@ -111,6 +178,11 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
     }
 
     private fun startForegroundService() {
+        // No mostrar notificación si la app está en primer plano
+        if (isAppInForeground()) {
+            return
+        }
+
         val notificationIntent = Intent(this, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_SINGLE_TOP
         }
@@ -149,6 +221,9 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
         }
     }
 
+    fun isTtsPlaying(): Boolean {
+        return isSpeaking
+    }
 
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -168,5 +243,19 @@ class TextToSpeechService : Service(), TextToSpeech.OnInitListener {
         } else {
             Log.e("TTS", "TTS Initialization failed")
         }
+    }
+
+    private fun isAppInForeground(): Boolean {
+        val activityManager = getSystemService(ACTIVITY_SERVICE) as ActivityManager
+        val appProcesses = activityManager.runningAppProcesses ?: return false
+        val packageName = applicationContext.packageName
+
+        for (process in appProcesses) {
+            if (process.importance == ActivityManager.RunningAppProcessInfo.IMPORTANCE_FOREGROUND
+                && process.processName == packageName) {
+                return true
+            }
+        }
+        return false
     }
 }

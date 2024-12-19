@@ -161,24 +161,22 @@ class ItemFragment : Fragment() {
         tvTotalDuration = view.findViewById(R.id.tvTotalDuration)
 
         btnPlayPause.setOnClickListener {
-            val intent = Intent(requireContext(), TextToSpeechService::class.java)
+            startTextToSpeechService(description)
+
             if (isTtsPlaying()) {
-                intent.action = TextToSpeechService.ACTION_STOP
-                requireContext().startService(intent)
+                // ...
+                pauseTtsPlayback()
                 btnPlayPause.setImageResource(R.drawable.ic_play)
             } else {
-                intent.action = TextToSpeechService.ACTION_SPEAK
-                intent.putExtra(TextToSpeechService.EXTRA_TEXT,description)
-                requireContext().startService(intent)
+                // ...
+                startOrResumeTts(description)
                 btnPlayPause.setImageResource(R.drawable.ic_pause)
-
             }
         }
 
         btnStop.setOnClickListener {
-            val intent = Intent(requireContext(), TextToSpeechService::class.java)
-            intent.action = TextToSpeechService.ACTION_STOP
-            requireContext().startService(intent)
+            // ...
+            stopTtsPlayback()
             btnPlayPause.setImageResource(R.drawable.ic_play)
             audioSeekBar.progress = 0
             tvCurrentTime.text = "0:00"
@@ -210,7 +208,7 @@ class ItemFragment : Fragment() {
         // Actualizar los TextView con los datos recibidos
         view.findViewById<TextView>(R.id.txtTitle).text = title
         view.findViewById<TextView>(R.id.txtDes).text = description
-        startTextToSpeechService(description)
+        //startTextToSpeechService(description)
     }
 
     private fun startTextToSpeechService(description: String) {
@@ -387,5 +385,6 @@ class ItemFragment : Fragment() {
             action = TextToSpeechService.ACTION_STOP
         }
         requireContext().startService(stopIntent)
+        // textToSpeechManager.shutdown()
     }
 }
