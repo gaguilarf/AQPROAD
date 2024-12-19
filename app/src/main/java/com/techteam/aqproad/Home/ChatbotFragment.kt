@@ -86,7 +86,7 @@ class ChatbotFragment : Fragment() {
         // Create the JSON body
         val jsonBody = JSONObject().apply {
             put("pregunta", question)
-            put("history", "")
+            put("history", " ")
         }
 
         val body = RequestBody.create(
@@ -95,7 +95,7 @@ class ChatbotFragment : Fragment() {
         )
 
         val request = Request.Builder()
-            .url("https://619d-45-231-83-43.ngrok-free.app/pregunta")
+            .url("https://6173-45-231-83-2.ngrok-free.app/pregunta")
             .post(body)
             .build()
 

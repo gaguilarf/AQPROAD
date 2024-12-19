@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -62,6 +63,9 @@ dependencies {
     implementation("com.google.android.material:material:1.12.0")
     implementation("io.coil-kt:coil:2.5.0")
     implementation (libs.play.services.location.v2101)
-
-
+    // Room Dependencies
+    implementation("androidx.room:room-runtime:2.5.1")
+    ksp("androidx.room:room-compiler:2.5.1")
+    implementation("androidx.room:room-ktx:2.5.1")
+    androidTestImplementation("androidx.room:room-testing:2.5.1")
 }
